@@ -1215,6 +1215,60 @@ body {
 .sync-dot.spinning { background: #d4a800; animation: spin 1s linear infinite; }
 .sync-dot.err { background: var(--red); }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== GROUP STANDINGS TABLE ===== */
+.fg-standings {
+  border-bottom: 1px solid var(--border);
+}
+.fg-standings-row {
+  display: grid;
+  grid-template-columns: 20px 1fr 24px 24px 24px 24px 30px 30px;
+  align-items: center;
+  padding: 5px 10px;
+  gap: 4px;
+  font-size: 11px;
+  border-bottom: 1px solid rgba(26,158,107,0.06);
+}
+.fg-standings-row:last-child { border-bottom: none; }
+.fg-standings-header {
+  background: var(--green-xlight);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 5px 10px;
+}
+.fg-standings-row.fg-qualifies { background: rgba(26,158,107,0.04); }
+.fg-standings-row.fg-maybe { background: rgba(245,200,66,0.04); }
+.fg-st-pos {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+.fg-standings-row.fg-qualifies .fg-st-pos { color: var(--green); }
+.fg-standings-row.fg-maybe .fg-st-pos { color: #a07800; }
+.fg-st-name {
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.fg-st-num {
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+}
+.fg-st-pts {
+  text-align: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  color: var(--green-dark);
+  font-weight: 700;
+}
 </style>
 </head>
 <body>
@@ -3183,12 +3237,43 @@ function renderFixture() {
   groups.forEach(g => {
     const gMatches = MATCHES.filter(m => m.round === 'Group Stage' && m.group === g);
     const grpStandings = standings[g] ? [...standings[g]] : null;
-    html += `<div class="fixture-group-card">`;
-    html += `<div class="fixture-group-header"><span>Group ${g}</span>`;
+    // Build standings table
+    let standingsHtml = '';
     if (grpStandings && grpStandings.length) {
-      html += `<span style="font-size:10px;opacity:0.7">${grpStandings.map((t,i) => `${i+1}. ${t.team} (${t.pts}pts)`).join(' · ')}</span>`;
+      const hasPlayed = grpStandings.some(t => t.w + t.d + t.l > 0);
+      standingsHtml = `<div class="fg-standings">`;
+      standingsHtml += `<div class="fg-standings-row fg-standings-header">
+        <span class="fg-st-pos">#</span>
+        <span class="fg-st-name">Team</span>
+        <span class="fg-st-num">P</span>
+        <span class="fg-st-num">W</span>
+        <span class="fg-st-num">D</span>
+        <span class="fg-st-num">L</span>
+        <span class="fg-st-num">GD</span>
+        <span class="fg-st-pts">Pts</span>
+      </div>`;
+      grpStandings.forEach((t, i) => {
+        const qualifies = i < 2;
+        const maybe3rd = i === 2;
+        standingsHtml += `<div class="fg-standings-row ${qualifies ? 'fg-qualifies' : maybe3rd ? 'fg-maybe' : ''}">
+          <span class="fg-st-pos">${i+1}</span>
+          <span class="fg-st-name" title="${t.team}">${t.team}</span>
+          <span class="fg-st-num">${t.w+t.d+t.l}</span>
+          <span class="fg-st-num">${t.w}</span>
+          <span class="fg-st-num">${t.d}</span>
+          <span class="fg-st-num">${t.l}</span>
+          <span class="fg-st-num">${t.gd > 0 ? '+'+t.gd : t.gd}</span>
+          <span class="fg-st-pts">${t.pts}</span>
+        </div>`;
+      });
+      standingsHtml += `</div>`;
     }
-    html += `</div>`;
+
+    html += `<div class="fixture-group-card">`;
+    html += `<div class="fixture-group-header"><span>Group ${g}</span></div>`;
+    html += standingsHtml;
+    // Divider between standings and matches
+    html += `<div style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:8px 12px 4px;border-top:1px solid var(--border)">Matches</div>`;
     gMatches.forEach(m => {
       const r = results[m.id];
       const played = r && r.homeGoals !== null && r.homeGoals !== undefined;
