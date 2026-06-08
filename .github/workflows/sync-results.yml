@@ -1,0 +1,25 @@
+name: Sync WC2026 Results
+
+on:
+  schedule:
+    # Every hour between 12pm-11pm Miami time (UTC-4 in summer = UTC 16:00-03:00)
+    - cron: '0 16,17,18,19,20,21,22,23,0,1,2,3 * * *'
+  workflow_dispatch: # allows manual trigger from GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run sync script
+        env:
+          FD_API_KEY: ${{ secrets.FD_API_KEY }}
+          FIREBASE_DB_URL: ${{ secrets.FIREBASE_DB_URL }}
+        run: node .github/workflows/sync-results.js
