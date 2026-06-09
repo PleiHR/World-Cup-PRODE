@@ -2221,8 +2221,8 @@ function subscribeAll() {
   keys.forEach(key => {
     db.ref('wc26/' + key).on('value', snap => {
       let val = snap.val();
-      // Remap user keys from email_dot_ format back to email format
-      if (key === 'users' && val) {
+      // Remap keys from email_dot_ format back to email format for users and predictions
+      if ((key === 'users' || key === 'predictions') && val) {
         const remapped = {};
         Object.entries(val).forEach(([k, v]) => {
           const email = k.replace(/_dot_/g, '.');
@@ -2658,6 +2658,29 @@ function getBreakdown(pred, result) {
   return parts.join(' · ');
 }
 
+
+// ============================================================
+// TEAM FLAGS — emoji flags for each country
+// ============================================================
+const TEAM_FLAGS = {
+  'Mexico': '🇲🇽', 'South Africa': '🇿🇦', 'South Korea': '🇰🇷', 'Czech Republic': '🇨🇿',
+  'Canada': '🇨🇦', 'Bosnia & Herzegovina': '🇧🇦', 'USA': '🇺🇸', 'Paraguay': '🇵🇾',
+  'Qatar': '🇶🇦', 'Switzerland': '🇨🇭', 'Brazil': '🇧🇷', 'Morocco': '🇲🇦',
+  'Haiti': '🇭🇹', 'Scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'Australia': '🇦🇺', 'Turkey': '🇹🇷',
+  'Germany': '🇩🇪', 'Curaçao': '🇨🇼', 'Netherlands': '🇳🇱', 'Japan': '🇯🇵',
+  'Ivory Coast': '🇨🇮', 'Ecuador': '🇪🇨', 'Ukraine': '🇺🇦', 'Tunisia': '🇹🇳',
+  'Spain': '🇪🇸', 'Cape Verde': '🇨🇻', 'Belgium': '🇧🇪', 'Egypt': '🇪🇬',
+  'Saudi Arabia': '🇸🇦', 'Uruguay': '🇺🇾', 'Iran': '🇮🇷', 'New Zealand': '🇳🇿',
+  'France': '🇫🇷', 'Senegal': '🇸🇳', 'Iraq': '🇮🇶', 'Norway': '🇳🇴',
+  'Argentina': '🇦🇷', 'Algeria': '🇩🇿', 'Austria': '🇦🇹', 'Jordan': '🇯🇴',
+  'Portugal': '🇵🇹', 'DRC': '🇨🇩', 'England': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Croatia': '🇭🇷',
+  'Ghana': '🇬🇭', 'Panama': '🇵🇦', 'Uzbekistan': '🇺🇿', 'Colombia': '🇨🇴',
+};
+
+function flag(team) {
+  return TEAM_FLAGS[team] ? TEAM_FLAGS[team] + ' ' : '';
+}
+
 // ============================================================
 // RENDER MATCHES
 // ============================================================
@@ -2977,16 +3000,15 @@ function renderMatchCard(m, result, pred) {
   let inputSection = '';
   if (!resultSet) {
     if (locked) {
-      const lockMsg = '🔒 Predictions closed for this match';
-      inputSection = `<div class="locked-msg">${lockMsg}</div>`;
+      inputSection = `<div class="locked-msg">🔒 Prediction Locked${pred ? ' · Your pick: <strong>' + pred.homeGoals + ' — ' + pred.awayGoals + (pred.penalties ? ' (pen: ' + pred.penalties + ')' : '') + '</strong>' : ' · No prediction entered'}</div>`;
     } else {
       const penSelector = isKnockout ? `
         <div class="penalty-row">
           <span class="penalty-label">Penalties →</span>
           <select class="penalty-select" id="pen_${m.id}">
             <option value="">— No penalties —</option>
-            <option value="${m.home}">${m.home}</option>
-            <option value="${m.away}">${m.away}</option>
+            <option value="${m.home}">${flag(m.home)}${m.home}</option>
+            <option value="${m.away}">${flag(m.away)}${m.away}</option>
           </select>
         </div>` : '';
 
@@ -2997,18 +3019,18 @@ function renderMatchCard(m, result, pred) {
       inputSection = `
         <div class="prediction-row">
           <div class="score-input-wrap">
-            <div class="score-input-label">${m.home}</div>
+            <div class="score-input-label">${flag(m.home)}${m.home}</div>
             <input class="score-input" id="home_${m.id}" type="number" min="0" max="20" placeholder="0" value="${savedHome}" />
           </div>
           <div class="predict-dash">—</div>
           <div class="score-input-wrap">
-            <div class="score-input-label">${m.away}</div>
+            <div class="score-input-label">${flag(m.away)}${m.away}</div>
             <input class="score-input" id="away_${m.id}" type="number" min="0" max="20" placeholder="0" value="${savedAway}" />
           </div>
         </div>
         ${penSelector}
-        <button class="save-prediction-btn" onclick="savePrediction('${m.id}','${m.home}','${m.away}',${isKnockout})">
-          ${pred ? '✏️ Update Prediction' : '💾 Save Prediction'}
+        <button class="save-prediction-btn" id="savebtn_${m.id}" onclick="savePrediction('${m.id}','${m.home}','${m.away}',${isKnockout})">
+          ${pred ? '✏️ Edit Prediction' : '💾 Save Prediction'}
         </button>
         <div class="saved-indicator" id="saved_${m.id}">✅ Saved!</div>`;
 
@@ -3028,9 +3050,9 @@ function renderMatchCard(m, result, pred) {
         <span class="match-venue">📍 ${m.venue.split(',')[0]}</span>
       </div>
       <div class="match-teams">
-        <div class="team-block"><span class="team-name">${m.home}</span></div>
+        <div class="team-block"><span class="team-name">${flag(m.home)}${m.home}</span></div>
         <div class="vs-block"><span class="vs">VS</span></div>
-        <div class="team-block" style="text-align:right"><span class="team-name away">${m.away}</span></div>
+        <div class="team-block" style="text-align:right"><span class="team-name away">${m.away} ${flag(m.away)}</span></div>
       </div>
       ${scoreDisplay}
       ${predSection}
@@ -3075,19 +3097,33 @@ async function savePrediction(matchId, home, away, isKnockout) {
     if (penEl) penalties = penEl.value;
   }
 
-  const allPreds = getData('predictions') || {};
-  if (!allPreds[currentUser.email]) allPreds[currentUser.email] = {};
-  allPreds[currentUser.email][matchId] = {
+  const emailKey = currentUser.email.replace(/\./g, '_dot_');
+  const predData = {
     homeGoals: parseInt(hVal),
     awayGoals: parseInt(aVal),
     penalties,
     savedAt: Date.now()
   };
-  setData('predictions', allPreds);
 
-  const ind = document.getElementById('saved_'+matchId);
-  if (ind) { ind.style.display = 'block'; setTimeout(() => { ind.style.display = 'none'; }, 2000); }
-  showToast('Prediction saved! ⚽', 'success');
+  // Write directly to this user's specific match prediction — avoids race conditions
+  db.ref('wc26/predictions/' + emailKey + '/' + matchId).set(predData).then(() => {
+    // Also update local cache
+    const allPreds = _cache['predictions'] || {};
+    if (!allPreds[currentUser.email]) allPreds[currentUser.email] = {};
+    allPreds[currentUser.email][matchId] = predData;
+    _cache['predictions'] = allPreds;
+
+    // Update button to show "Edit Prediction"
+    const btn = document.querySelector(`button[onclick*="savePrediction('${matchId}'"]`);
+    if (btn) btn.textContent = '✏️ Edit Prediction';
+
+    const ind = document.getElementById('saved_'+matchId);
+    if (ind) { ind.style.display = 'block'; setTimeout(() => { ind.style.display = 'none'; }, 2000); }
+    showToast('Prediction saved! ⚽', 'success');
+  }).catch(err => {
+    showToast('❌ Save failed — check connection', 'error');
+    console.error('Save prediction error:', err);
+  });
 }
 
 
@@ -3257,7 +3293,7 @@ function renderFixture() {
         const maybe3rd = i === 2;
         standingsHtml += `<div class="fg-standings-row ${qualifies ? 'fg-qualifies' : maybe3rd ? 'fg-maybe' : ''}">
           <span class="fg-st-pos">${i+1}</span>
-          <span class="fg-st-name" title="${t.team}">${t.team}</span>
+          <span class="fg-st-name" title="${t.team}">${flag(t.team)}${t.team}</span>
           <span class="fg-st-num">${t.w+t.d+t.l}</span>
           <span class="fg-st-num">${t.w}</span>
           <span class="fg-st-num">${t.d}</span>
@@ -3287,9 +3323,9 @@ function renderFixture() {
       }
       const dateStr = new Date(m.date).toLocaleDateString('en-US', {day:'2-digit',month:'short'});
       html += `<div class="fixture-group-match">
-        <span class="fg-team ${homeClass}" title="${m.home}">${m.home}</span>
+        <span class="fg-team ${homeClass}" title="${m.home}">${flag(m.home)}${m.home}</span>
         ${scoreHtml}
-        <span class="fg-team right ${awayClass}" title="${m.away}">${m.away}</span>
+        <span class="fg-team right ${awayClass}" title="${m.away}">${m.away} ${flag(m.away)}</span>
         <span style="font-size:9px;color:var(--muted);margin-left:4px;flex-shrink:0">${dateStr}</span>
       </div>`;
     });
@@ -3340,11 +3376,11 @@ function renderFixture() {
           <span>${dateStr}</span>
         </div>
         <div class="fixture-ko-team ${homeClass}${homeExtraTbd}">
-          <span class="fko-name" title="${m.home}">${m.home}</span>
+          <span class="fko-name" title="${m.home}">${flag(m.home)}${m.home}</span>
           <span class="fko-score">${homeScore !== '' ? homeScore : ''}</span>
         </div>
         <div class="fixture-ko-team ${awayClass}${awayExtraTbd}">
-          <span class="fko-name" title="${m.away}">${m.away}</span>
+          <span class="fko-name" title="${m.away}">${flag(m.away)}${m.away}</span>
           <span class="fko-score">${awayScore !== '' ? awayScore : ''}</span>
         </div>
         ${penHtml}
