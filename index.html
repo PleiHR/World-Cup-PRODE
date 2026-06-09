@@ -2660,14 +2660,14 @@ function getBreakdown(pred, result) {
 
 
 // ============================================================
-// TEAM FLAGS — PNG images from flagcdn.com (works on all platforms)
+// TEAM FLAGS — inline SVG flags via country-flags-svg CDN
 // ============================================================
 const TEAM_FLAG_CODES = {
   'Mexico': 'mx', 'South Africa': 'za', 'South Korea': 'kr', 'Czech Republic': 'cz',
   'Canada': 'ca', 'Bosnia & Herzegovina': 'ba', 'USA': 'us', 'Paraguay': 'py',
   'Qatar': 'qa', 'Switzerland': 'ch', 'Brazil': 'br', 'Morocco': 'ma',
   'Haiti': 'ht', 'Scotland': 'gb-sct', 'Australia': 'au', 'Turkey': 'tr',
-  'Germany': 'de', 'Curaçao': 'cw', 'Netherlands': 'nl', 'Japan': 'jp',
+  'Germany': 'de', 'Curacao': 'cw', 'Curaçao': 'cw', 'Netherlands': 'nl', 'Japan': 'jp',
   'Ivory Coast': 'ci', 'Ecuador': 'ec', 'Ukraine': 'ua', 'Tunisia': 'tn',
   'Spain': 'es', 'Cape Verde': 'cv', 'Belgium': 'be', 'Egypt': 'eg',
   'Saudi Arabia': 'sa', 'Uruguay': 'uy', 'Iran': 'ir', 'New Zealand': 'nz',
@@ -2677,11 +2677,16 @@ const TEAM_FLAG_CODES = {
   'Ghana': 'gh', 'Panama': 'pa', 'Uzbekistan': 'uz', 'Colombia': 'co',
 };
 
-function flag(team, size) {
+function flag(team) {
   const code = TEAM_FLAG_CODES[team];
   if (!code) return '';
-  const h = size || 14;
-  return `<img src="https://flagcdn.com/h${h}/${code}.png" alt="${team}" style="height:${h}px;width:auto;border-radius:2px;vertical-align:middle;margin-right:4px;box-shadow:0 0 1px rgba(0,0,0,0.2);" loading="lazy" />`;
+  // Use flagpedia.net which is very reliable and CORS-friendly
+  return `<img src="https://flagpedia.net/data/flags/emoji/openmoji/64x64/${code}.png" alt="" style="height:16px;width:auto;border-radius:2px;vertical-align:middle;margin-right:5px;display:inline-block;" loading="lazy" onerror="this.style.display='none'" />`;
+}
+
+// flagWithName: returns flag image + team name as one string
+function flagWithName(team) {
+  return flag(team) + team;
 }
 
 // ============================================================
@@ -3010,8 +3015,8 @@ function renderMatchCard(m, result, pred) {
           <span class="penalty-label">Penalties →</span>
           <select class="penalty-select" id="pen_${m.id}">
             <option value="">— No penalties —</option>
-            <option value="${m.home}">${flag(m.home)}${m.home}</option>
-            <option value="${m.away}">${flag(m.away)}${m.away}</option>
+            <option value="${m.home}">${flagWithName(m.home)}</option>
+            <option value="${m.away}">${flagWithName(m.away)}</option>
           </select>
         </div>` : '';
 
@@ -3022,12 +3027,12 @@ function renderMatchCard(m, result, pred) {
       inputSection = `
         <div class="prediction-row">
           <div class="score-input-wrap">
-            <div class="score-input-label">${flag(m.home)}${m.home}</div>
+            <div class="score-input-label">${flagWithName(m.home)}</div>
             <input class="score-input" id="home_${m.id}" type="number" min="0" max="20" placeholder="0" value="${savedHome}" />
           </div>
           <div class="predict-dash">—</div>
           <div class="score-input-wrap">
-            <div class="score-input-label">${flag(m.away)}${m.away}</div>
+            <div class="score-input-label">${flagWithName(m.away)}</div>
             <input class="score-input" id="away_${m.id}" type="number" min="0" max="20" placeholder="0" value="${savedAway}" />
           </div>
         </div>
@@ -3053,9 +3058,9 @@ function renderMatchCard(m, result, pred) {
         <span class="match-venue">📍 ${m.venue.split(',')[0]}</span>
       </div>
       <div class="match-teams">
-        <div class="team-block"><span class="team-name">${flag(m.home)}${m.home}</span></div>
+        <div class="team-block"><span class="team-name">${flagWithName(m.home)}</span></div>
         <div class="vs-block"><span class="vs">VS</span></div>
-        <div class="team-block" style="text-align:right"><span class="team-name away">${flag(m.away)}${m.away}</span></div>
+        <div class="team-block" style="text-align:right"><span class="team-name away">${flagWithName(m.away)}</span></div>
       </div>
       ${scoreDisplay}
       ${predSection}
@@ -3296,7 +3301,7 @@ function renderFixture() {
         const maybe3rd = i === 2;
         standingsHtml += `<div class="fg-standings-row ${qualifies ? 'fg-qualifies' : maybe3rd ? 'fg-maybe' : ''}">
           <span class="fg-st-pos">${i+1}</span>
-          <span class="fg-st-name" title="${t.team}">${flag(t.team)}${t.team}</span>
+          <span class="fg-st-name" title="${t.team}">${flagWithName(t.team)}</span>
           <span class="fg-st-num">${t.w+t.d+t.l}</span>
           <span class="fg-st-num">${t.w}</span>
           <span class="fg-st-num">${t.d}</span>
@@ -3326,9 +3331,9 @@ function renderFixture() {
       }
       const dateStr = new Date(m.date).toLocaleDateString('en-US', {day:'2-digit',month:'short'});
       html += `<div class="fixture-group-match">
-        <span class="fg-team ${homeClass}" title="${m.home}">${flag(m.home)}${m.home}</span>
+        <span class="fg-team ${homeClass}" title="${m.home}">${flagWithName(m.home)}</span>
         ${scoreHtml}
-        <span class="fg-team right ${awayClass}" title="${m.away}">${flag(m.away)}${m.away}</span>
+        <span class="fg-team right ${awayClass}" title="${m.away}">${flagWithName(m.away)}</span>
         <span style="font-size:9px;color:var(--muted);margin-left:4px;flex-shrink:0">${dateStr}</span>
       </div>`;
     });
@@ -3379,11 +3384,11 @@ function renderFixture() {
           <span>${dateStr}</span>
         </div>
         <div class="fixture-ko-team ${homeClass}${homeExtraTbd}">
-          <span class="fko-name" title="${m.home}">${flag(m.home)}${m.home}</span>
+          <span class="fko-name" title="${m.home}">${flagWithName(m.home)}</span>
           <span class="fko-score">${homeScore !== '' ? homeScore : ''}</span>
         </div>
         <div class="fixture-ko-team ${awayClass}${awayExtraTbd}">
-          <span class="fko-name" title="${m.away}">${flag(m.away)}${m.away}</span>
+          <span class="fko-name" title="${m.away}">${flagWithName(m.away)}</span>
           <span class="fko-score">${awayScore !== '' ? awayScore : ''}</span>
         </div>
         ${penHtml}
