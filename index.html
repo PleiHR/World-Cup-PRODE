@@ -3816,67 +3816,20 @@ function setSyncStatus(status, msg) {
 
 async function syncResultsFromAPI() {
   if (!currentUser || !currentUser.isAdmin) return;
-  setSyncStatus('syncing', '⏳ Fetching results from football-data.org...');
+  setSyncStatus('syncing', '⏳ Triggering sync...');
   try {
-    const res = await fetch(FD_WC_URL, {
-      headers: { 'X-Auth-Token': FD_API_KEY }
+    // Call Cloudflare Worker which securely triggers GitHub Actions
+    const res = await fetch('https://prode-sync.priscila-d72.workers.dev', {
+      method: 'POST'
     });
-    if (!res.ok) {
-      if (res.status === 403) {
-        setSyncStatus('error', '❌ API blocked — add your GitHub Pages domain to football-data.org account settings');
-      } else {
-        setSyncStatus('error', `❌ API error: ${res.status}`);
-      }
-      return;
-    }
     const data = await res.json();
-    const matches = data.matches || [];
-    const results = getData('results') || {};
-    let updated = 0;
-
-    matches.forEach(fdMatch => {
-      // Only process finished matches
-      if (fdMatch.status !== 'FINISHED') return;
-      const ourMatch = findOurMatch(fdMatch);
-      if (!ourMatch) return;
-
-      const homeGoals = fdMatch.score.fullTime.home;
-      const awayGoals = fdMatch.score.fullTime.away;
-      if (homeGoals === null || homeGoals === undefined) return;
-
-      // Check if teams are swapped (away team is our home team)
-      const home = normalizeTeamName(fdMatch.homeTeam.name);
-      const isSwapped = ourMatch.home !== home;
-
-      const existingResult = results[ourMatch.id];
-      const newHome = isSwapped ? awayGoals : homeGoals;
-      const newAway = isSwapped ? homeGoals : awayGoals;
-
-      // Only update if different from stored result
-      if (!existingResult ||
-          existingResult.homeGoals !== newHome ||
-          existingResult.awayGoals !== newAway) {
-        results[ourMatch.id] = {
-          homeGoals: newHome,
-          awayGoals: newAway,
-          penalties: existingResult ? existingResult.penalties : '',
-          setAt: Date.now(),
-          autoSynced: true
-        };
-        updated++;
-      }
-    });
-
-    if (updated > 0) {
-      setData('results', results);
-      applyBracket();
-      computeStageWinnersIfNeeded();
-      renderAdmin();
+    if (data.ok) {
+      setSyncStatus('ok', '✅ Sync triggered! Results will update in ~30 seconds.');
+    } else {
+      setSyncStatus('error', `❌ Failed: ${data.error || data.status}`);
     }
-    const lastSync = new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
-    setSyncStatus('ok', `✅ Synced ${updated} new result${updated !== 1 ? 's' : ''} · Last sync: ${lastSync}`);
   } catch(e) {
-    setSyncStatus('error', `❌ Sync failed: ${e.message}. Make sure your domain is allowlisted at football-data.org`);
+    setSyncStatus('error', `❌ Error: ${e.message}`);
   }
 }
 
