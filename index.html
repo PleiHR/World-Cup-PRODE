@@ -3640,12 +3640,19 @@ function adminResetPassword(email) {
     showToast('Password must be at least 3 characters.', 'error');
     return;
   }
-  const users = getData('users') || {};
-  if (!users[email]) { showToast('User not found.', 'error'); return; }
-  users[email].pass = newPass;
-  setData('users', users);
-  input.value = '';
-  showToast(`✅ Password reset for ${users[email].name}`, 'success');
+  // Write directly to Firebase using the safe email key
+  const emailKey = email.replace(/\./g, '_dot_');
+  db.ref('wc26/users/' + emailKey + '/pass').set(newPass).then(() => {
+    // Update cache too
+    const users = _cache['users'] || {};
+    if (users[email]) users[email].pass = newPass;
+    _cache['users'] = users;
+    input.value = '';
+    showToast('✅ Password reset successfully', 'success');
+  }).catch(err => {
+    showToast('❌ Failed to reset password', 'error');
+    console.error(err);
+  });
 }
 
 
