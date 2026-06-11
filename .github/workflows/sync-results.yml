@@ -2,9 +2,9 @@ name: Sync WC2026 Results
 
 on:
   schedule:
-    # Every hour from 12pm to 2am Miami ET (EDT = UTC-4)
+    # Every 30 min from 12pm to 2am Miami ET (EDT = UTC-4)
     # 12pm ET = 16:00 UTC  /  2am ET = 06:00 UTC
-    - cron: '0 16,17,18,19,20,21,22,23,0,1,2,3,4,5,6 * * *'
+    - cron: '0,30 16,17,18,19,20,21,22,23,0,1,2,3,4,5,6 * * *'
   workflow_dispatch: # manual trigger from GitHub Actions UI
 
 jobs:
