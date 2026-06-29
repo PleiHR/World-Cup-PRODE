@@ -2629,7 +2629,8 @@ function formatDate(dateStr) {
 // Points: 1 pt per correct team goal (independent), 3 pts outcome, +5 exact
 // NOTE: no "home/away" concept — just Team A and Team B goals
 // ============================================================
-function calcPoints(pred, result) {
+function calcPoints(pred, result, matchId) {
+  if (matchId === 'r32_02') return 0;
   if (!result || result.homeGoals === null || result.homeGoals === undefined) return null;
   let pts = 0;
   const pHome = parseInt(pred.homeGoals), pAway = parseInt(pred.awayGoals);
@@ -2796,7 +2797,7 @@ function renderMatches() {
     const result = results[m.id];
     if (pred) {
       filled++;
-      const pts = calcPoints(pred, result);
+      const pts = calcPoints(pred, result, m.id);
       if (pts !== null) { totalPts += pts; if (pts > 0) correct++; }
     }
   });
@@ -2998,7 +2999,7 @@ function renderMatchCard(m, result, pred) {
   const locked = isLocked(m);
   const isKnockout = m.round !== 'Group Stage';
   const resultSet = result && result.homeGoals !== undefined && result.homeGoals !== null;
-  const pts = pred ? calcPoints(pred, result) : null;
+  const pts = pred ? calcPoints(pred, result, m.id) : null;
   const breakdown = pred && result ? getBreakdown(pred, result) : '';
 
   let scoreDisplay = '';
@@ -3463,7 +3464,7 @@ function computeStageWinnersIfNeeded() {
         const pred = preds[mid];
         const result = results[mid];
         if (!pred) return;
-        const pts = calcPoints(pred, result);
+        const pts = calcPoints(pred, result, mid);
         if (pts !== null) total += pts;
       });
       return { name: u.name, email: u.email, total };
@@ -3500,7 +3501,7 @@ function renderRanking() {
       const result = results[m.id];
       if (!pred) return;
       filled++;
-      const pts = calcPoints(pred, result);
+      const pts = calcPoints(pred, result, m.id);
       if (pts === null) return;
       total += pts;
       if (pts >= 9) exact++;
@@ -3602,7 +3603,7 @@ function renderUsersPanel() {
     const predCount = Object.keys(predictions[u.email] || {}).length;
     let pts = 0;
     Object.entries(predictions[u.email] || {}).forEach(([mid, pred]) => {
-      const p = calcPoints(pred, results[mid]);
+      const p = calcPoints(pred, results[mid], mid);
       if (p !== null) pts += p;
     });
     const joinDate = u.joined ? new Date(u.joined).toLocaleDateString('en-US', {day:'2-digit',month:'short',year:'numeric'}) : '—';
@@ -6742,7 +6743,8 @@ function formatDate(dateStr) {
 // Points: 1 pt per correct team goal (independent), 3 pts outcome, +5 exact
 // NOTE: no "home/away" concept — just Team A and Team B goals
 // ============================================================
-function calcPoints(pred, result) {
+function calcPoints(pred, result, matchId) {
+  if (matchId === 'r32_02') return 0;
   if (!result || result.homeGoals === null || result.homeGoals === undefined) return null;
   let pts = 0;
   const pHome = parseInt(pred.homeGoals), pAway = parseInt(pred.awayGoals);
@@ -6909,7 +6911,7 @@ function renderMatches() {
     const result = results[m.id];
     if (pred) {
       filled++;
-      const pts = calcPoints(pred, result);
+      const pts = calcPoints(pred, result, m.id);
       if (pts !== null) { totalPts += pts; if (pts > 0) correct++; }
     }
   });
@@ -7111,7 +7113,7 @@ function renderMatchCard(m, result, pred) {
   const locked = isLocked(m);
   const isKnockout = m.round !== 'Group Stage';
   const resultSet = result && result.homeGoals !== undefined && result.homeGoals !== null;
-  const pts = pred ? calcPoints(pred, result) : null;
+  const pts = pred ? calcPoints(pred, result, m.id) : null;
   const breakdown = pred && result ? getBreakdown(pred, result) : '';
 
   let scoreDisplay = '';
@@ -7578,7 +7580,7 @@ function computeStageWinnersIfNeeded() {
         const pred = preds[mid];
         const result = results[mid];
         if (!pred) return;
-        const pts = calcPoints(pred, result);
+        const pts = calcPoints(pred, result, mid);
         if (pts !== null) total += pts;
       });
       return { name: u.name, email: u.email, total };
@@ -7615,7 +7617,7 @@ function renderRanking() {
       const result = results[m.id];
       if (!pred) return;
       filled++;
-      const pts = calcPoints(pred, result);
+      const pts = calcPoints(pred, result, m.id);
       if (pts === null) return;
       total += pts;
       if (pts >= 9) exact++;
@@ -7717,7 +7719,7 @@ function renderUsersPanel() {
     const predCount = Object.keys(predictions[u.email] || {}).length;
     let pts = 0;
     Object.entries(predictions[u.email] || {}).forEach(([mid, pred]) => {
-      const p = calcPoints(pred, results[mid]);
+      const p = calcPoints(pred, results[mid], mid);
       if (p !== null) pts += p;
     });
     const joinDate = u.joined ? new Date(u.joined).toLocaleDateString('en-US', {day:'2-digit',month:'short',year:'numeric'}) : '—';
