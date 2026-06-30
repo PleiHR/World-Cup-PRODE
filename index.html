@@ -280,9 +280,11 @@ body {
 .team-name.away { text-align: right; }
 .vs-block { text-align: center; }
 .vs { font-family: 'Bebas Neue', sans-serif; font-size: 15px; color: var(--muted); padding: 0 4px; }
-.match-result-display { display: flex; justify-content: center; gap: 6px; align-items: center; margin-bottom: 10px; }
+.match-result-display { display: flex; justify-content: center; gap: 6px; align-items: center; margin-bottom: 4px; }
 .result-score { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--green); }
 .result-dash { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--muted); }
+.result-penalty-note { text-align: center; font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+.result-penalty-note strong { color: var(--green-dark); }
 
 /* Prediction inputs — single score per team, side by side */
 .prediction-row {
@@ -2634,7 +2636,8 @@ function calcPoints(pred, result, matchId) {
   if (!result || result.homeGoals === null || result.homeGoals === undefined) return null;
   let pts = 0;
   const pHome = parseInt(pred.homeGoals), pAway = parseInt(pred.awayGoals);
-  const rHome = parseInt(result.homeGoals), rAway = parseInt(result.awayGoals);
+  const officialScore = getOfficialScoreDisplay(result);
+  const rHome = parseInt(officialScore.home), rAway = parseInt(officialScore.away);
   if (isNaN(pHome) || isNaN(pAway)) return null;
 
   // 1 point per correct team goal count (independent)
@@ -2643,14 +2646,14 @@ function calcPoints(pred, result, matchId) {
 
   // 3 points for correct outcome (who won or draw)
   const predWinner = pHome > pAway ? 'A' : pAway > pHome ? 'B' : 'draw';
-  const realWinner = rHome > rAway ? 'A' : rAway > rHome ? 'B' : 'draw';
+  const realWinner = result.penalties ? 'draw' : (rHome > rAway ? 'A' : rAway > rHome ? 'B' : 'draw');
   if (predWinner === realWinner) pts += 3;
 
   // +5 bonus for exact score
   if (pHome === rHome && pAway === rAway) pts += 5;
 
-  // Penalty bonus (knockout draws only)
-  if (result.penalties && pred.penalties && predWinner === 'draw' && realWinner === 'draw') {
+  // Penalty shootout bonus is separate from regular score points.
+  if (result.penalties && pred.penalties && predWinner === 'draw') {
     if (pred.penalties === result.penalties) pts += 3;
   }
 
@@ -2660,17 +2663,43 @@ function calcPoints(pred, result, matchId) {
 function getBreakdown(pred, result) {
   if (!result || result.homeGoals === null || result.homeGoals === undefined) return '';
   const pHome = parseInt(pred.homeGoals), pAway = parseInt(pred.awayGoals);
-  const rHome = parseInt(result.homeGoals), rAway = parseInt(result.awayGoals);
+  const officialScore = getOfficialScoreDisplay(result);
+  const rHome = parseInt(officialScore.home), rAway = parseInt(officialScore.away);
   if (isNaN(pHome) || isNaN(pAway)) return '';
   const parts = [];
   if (pHome === rHome) parts.push('Goals A +1');
   if (pAway === rAway) parts.push('Goals B +1');
   const predWinner = pHome > pAway ? 'A' : pAway > pHome ? 'B' : 'draw';
-  const realWinner = rHome > rAway ? 'A' : rAway > rHome ? 'B' : 'draw';
+  const realWinner = result.penalties ? 'draw' : (rHome > rAway ? 'A' : rAway > rHome ? 'B' : 'draw');
   if (predWinner === realWinner) parts.push('Outcome +3');
   if (pHome === rHome && pAway === rAway) parts.push('Exact +5');
-  if (result.penalties && pred.penalties && predWinner === 'draw' && realWinner === 'draw' && pred.penalties === result.penalties) parts.push('Penalties +3');
+  if (result.penalties && pred.penalties && predWinner === 'draw' && pred.penalties === result.penalties) parts.push('Penalties +3');
   return parts.join(' · ');
+}
+
+function getOfficialScoreDisplay(result) {
+  const hasExplicitMatchScore =
+    result.matchHomeGoals !== undefined || result.matchAwayGoals !== undefined ||
+    result.fullTimeHomeGoals !== undefined || result.fullTimeAwayGoals !== undefined ||
+    result.regularHomeGoals !== undefined || result.regularAwayGoals !== undefined;
+  const homeGoals = result.matchHomeGoals ?? result.fullTimeHomeGoals ?? result.regularHomeGoals ?? result.homeGoals;
+  const awayGoals = result.matchAwayGoals ?? result.fullTimeAwayGoals ?? result.regularAwayGoals ?? result.awayGoals;
+  const storedHome = parseInt(result.homeGoals);
+  const storedAway = parseInt(result.awayGoals);
+  const looksLikePenaltyScore = result.penalties && !hasExplicitMatchScore && storedHome !== storedAway;
+  if (looksLikePenaltyScore) return { home: null, away: null, label: 'Draw' };
+  return { home: homeGoals, away: awayGoals, label: null };
+}
+
+function renderOfficialResult(result) {
+  const display = getOfficialScoreDisplay(result);
+  const scoreHtml = display.label
+    ? `<span class="result-score">${display.label}</span>`
+    : `<span class="result-score">${display.home}</span><span class="result-dash">—</span><span class="result-score">${display.away}</span>`;
+  const penNote = result.penalties
+    ? `<div class="result-penalty-note"><strong>${result.penalties}</strong> won on penalties</div>`
+    : '';
+  return `<div class="match-result-display">${scoreHtml}</div>${penNote}`;
 }
 
 
@@ -3004,8 +3033,7 @@ function renderMatchCard(m, result, pred) {
 
   let scoreDisplay = '';
   if (resultSet) {
-    let penLabel = result.penalties ? `<span style="font-size:11px;color:var(--muted);margin-left:6px">(${result.penalties} on pens)</span>` : '';
-    scoreDisplay = `<div class="match-result-display"><span class="result-score">${result.homeGoals}</span><span class="result-dash">—</span><span class="result-score">${result.awayGoals}</span>${penLabel}</div>`;
+    scoreDisplay = renderOfficialResult(result);
   }
 
   let predSection = '';
@@ -3118,6 +3146,11 @@ async function savePrediction(matchId, home, away, isKnockout) {
   if (isKnockout) {
     const penEl = document.getElementById('pen_'+matchId);
     if (penEl) penalties = penEl.value;
+    if (parseInt(hVal) === parseInt(aVal) && !penalties) {
+      showToast('Choose the penalty shootout winner for a knockout draw.', 'error');
+      return;
+    }
+    if (parseInt(hVal) !== parseInt(aVal)) penalties = '';
   }
 
   const emailKey = currentUser.email.replace(/\./g, '_dot_');
@@ -3981,7 +4014,7 @@ function renderAdmin() {
           <div class="team-block" style="text-align:right"><span class="team-name away">${m.away}</span></div>
         </div>
         ${bracketRow}
-        ${hasResult ? `<div class="match-result-display"><span class="result-score" style="color:var(--green-dark)">${result.homeGoals}</span><span class="result-dash">—</span><span class="result-score" style="color:var(--green-dark)">${result.awayGoals}</span></div>` : ''}
+        ${hasResult ? renderOfficialResult(result) : ''}
         <div class="admin-result-row">
           <input class="admin-score" id="ar_home_${m.id}" type="number" min="0" max="20" placeholder="0" value="${hasResult ? result.homeGoals : ''}" />
           <div class="predict-dash" style="color:rgba(255,77,77,0.5)">—</div>
@@ -4048,6 +4081,14 @@ function setResult(matchId, home, away, isKO) {
   if (isKO) {
     const penEl = document.getElementById('adminpen_'+matchId);
     if (penEl) penalties = penEl.value;
+    if (parseInt(hVal) === parseInt(aVal) && !penalties) {
+      showToast('Select the penalty winner for a tied knockout result.', 'error');
+      return;
+    }
+    if (parseInt(hVal) !== parseInt(aVal) && penalties) {
+      showToast('Penalty winner only applies when the match score is tied.', 'error');
+      return;
+    }
   }
 
   const results = getData('results') || {};
@@ -4408,9 +4449,11 @@ body {
 .team-name.away { text-align: right; }
 .vs-block { text-align: center; }
 .vs { font-family: 'Bebas Neue', sans-serif; font-size: 15px; color: var(--muted); padding: 0 4px; }
-.match-result-display { display: flex; justify-content: center; gap: 6px; align-items: center; margin-bottom: 10px; }
+.match-result-display { display: flex; justify-content: center; gap: 6px; align-items: center; margin-bottom: 4px; }
 .result-score { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--green); }
 .result-dash { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--muted); }
+.result-penalty-note { text-align: center; font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+.result-penalty-note strong { color: var(--green-dark); }
 
 /* Prediction inputs — single score per team, side by side */
 .prediction-row {
@@ -6748,7 +6791,8 @@ function calcPoints(pred, result, matchId) {
   if (!result || result.homeGoals === null || result.homeGoals === undefined) return null;
   let pts = 0;
   const pHome = parseInt(pred.homeGoals), pAway = parseInt(pred.awayGoals);
-  const rHome = parseInt(result.homeGoals), rAway = parseInt(result.awayGoals);
+  const officialScore = getOfficialScoreDisplay(result);
+  const rHome = parseInt(officialScore.home), rAway = parseInt(officialScore.away);
   if (isNaN(pHome) || isNaN(pAway)) return null;
 
   // 1 point per correct team goal count (independent)
@@ -6757,14 +6801,14 @@ function calcPoints(pred, result, matchId) {
 
   // 3 points for correct outcome (who won or draw)
   const predWinner = pHome > pAway ? 'A' : pAway > pHome ? 'B' : 'draw';
-  const realWinner = rHome > rAway ? 'A' : rAway > rHome ? 'B' : 'draw';
+  const realWinner = result.penalties ? 'draw' : (rHome > rAway ? 'A' : rAway > rHome ? 'B' : 'draw');
   if (predWinner === realWinner) pts += 3;
 
   // +5 bonus for exact score
   if (pHome === rHome && pAway === rAway) pts += 5;
 
-  // Penalty bonus (knockout draws only)
-  if (result.penalties && pred.penalties && predWinner === 'draw' && realWinner === 'draw') {
+  // Penalty shootout bonus is separate from regular score points.
+  if (result.penalties && pred.penalties && predWinner === 'draw') {
     if (pred.penalties === result.penalties) pts += 3;
   }
 
@@ -6774,17 +6818,43 @@ function calcPoints(pred, result, matchId) {
 function getBreakdown(pred, result) {
   if (!result || result.homeGoals === null || result.homeGoals === undefined) return '';
   const pHome = parseInt(pred.homeGoals), pAway = parseInt(pred.awayGoals);
-  const rHome = parseInt(result.homeGoals), rAway = parseInt(result.awayGoals);
+  const officialScore = getOfficialScoreDisplay(result);
+  const rHome = parseInt(officialScore.home), rAway = parseInt(officialScore.away);
   if (isNaN(pHome) || isNaN(pAway)) return '';
   const parts = [];
   if (pHome === rHome) parts.push('Goals A +1');
   if (pAway === rAway) parts.push('Goals B +1');
   const predWinner = pHome > pAway ? 'A' : pAway > pHome ? 'B' : 'draw';
-  const realWinner = rHome > rAway ? 'A' : rAway > rHome ? 'B' : 'draw';
+  const realWinner = result.penalties ? 'draw' : (rHome > rAway ? 'A' : rAway > rHome ? 'B' : 'draw');
   if (predWinner === realWinner) parts.push('Outcome +3');
   if (pHome === rHome && pAway === rAway) parts.push('Exact +5');
-  if (result.penalties && pred.penalties && predWinner === 'draw' && realWinner === 'draw' && pred.penalties === result.penalties) parts.push('Penalties +3');
+  if (result.penalties && pred.penalties && predWinner === 'draw' && pred.penalties === result.penalties) parts.push('Penalties +3');
   return parts.join(' · ');
+}
+
+function getOfficialScoreDisplay(result) {
+  const hasExplicitMatchScore =
+    result.matchHomeGoals !== undefined || result.matchAwayGoals !== undefined ||
+    result.fullTimeHomeGoals !== undefined || result.fullTimeAwayGoals !== undefined ||
+    result.regularHomeGoals !== undefined || result.regularAwayGoals !== undefined;
+  const homeGoals = result.matchHomeGoals ?? result.fullTimeHomeGoals ?? result.regularHomeGoals ?? result.homeGoals;
+  const awayGoals = result.matchAwayGoals ?? result.fullTimeAwayGoals ?? result.regularAwayGoals ?? result.awayGoals;
+  const storedHome = parseInt(result.homeGoals);
+  const storedAway = parseInt(result.awayGoals);
+  const looksLikePenaltyScore = result.penalties && !hasExplicitMatchScore && storedHome !== storedAway;
+  if (looksLikePenaltyScore) return { home: null, away: null, label: 'Draw' };
+  return { home: homeGoals, away: awayGoals, label: null };
+}
+
+function renderOfficialResult(result) {
+  const display = getOfficialScoreDisplay(result);
+  const scoreHtml = display.label
+    ? `<span class="result-score">${display.label}</span>`
+    : `<span class="result-score">${display.home}</span><span class="result-dash">—</span><span class="result-score">${display.away}</span>`;
+  const penNote = result.penalties
+    ? `<div class="result-penalty-note"><strong>${result.penalties}</strong> won on penalties</div>`
+    : '';
+  return `<div class="match-result-display">${scoreHtml}</div>${penNote}`;
 }
 
 
@@ -7118,8 +7188,7 @@ function renderMatchCard(m, result, pred) {
 
   let scoreDisplay = '';
   if (resultSet) {
-    let penLabel = result.penalties ? `<span style="font-size:11px;color:var(--muted);margin-left:6px">(${result.penalties} on pens)</span>` : '';
-    scoreDisplay = `<div class="match-result-display"><span class="result-score">${result.homeGoals}</span><span class="result-dash">—</span><span class="result-score">${result.awayGoals}</span>${penLabel}</div>`;
+    scoreDisplay = renderOfficialResult(result);
   }
 
   let predSection = '';
@@ -7232,6 +7301,11 @@ async function savePrediction(matchId, home, away, isKnockout) {
   if (isKnockout) {
     const penEl = document.getElementById('pen_'+matchId);
     if (penEl) penalties = penEl.value;
+    if (parseInt(hVal) === parseInt(aVal) && !penalties) {
+      showToast('Choose the penalty shootout winner for a knockout draw.', 'error');
+      return;
+    }
+    if (parseInt(hVal) !== parseInt(aVal)) penalties = '';
   }
 
   const emailKey = currentUser.email.replace(/\./g, '_dot_');
@@ -8097,7 +8171,7 @@ function renderAdmin() {
           <div class="team-block" style="text-align:right"><span class="team-name away">${m.away}</span></div>
         </div>
         ${bracketRow}
-        ${hasResult ? `<div class="match-result-display"><span class="result-score" style="color:var(--green-dark)">${result.homeGoals}</span><span class="result-dash">—</span><span class="result-score" style="color:var(--green-dark)">${result.awayGoals}</span></div>` : ''}
+        ${hasResult ? renderOfficialResult(result) : ''}
         <div class="admin-result-row">
           <input class="admin-score" id="ar_home_${m.id}" type="number" min="0" max="20" placeholder="0" value="${hasResult ? result.homeGoals : ''}" />
           <div class="predict-dash" style="color:rgba(255,77,77,0.5)">—</div>
@@ -8164,6 +8238,14 @@ function setResult(matchId, home, away, isKO) {
   if (isKO) {
     const penEl = document.getElementById('adminpen_'+matchId);
     if (penEl) penalties = penEl.value;
+    if (parseInt(hVal) === parseInt(aVal) && !penalties) {
+      showToast('Select the penalty winner for a tied knockout result.', 'error');
+      return;
+    }
+    if (parseInt(hVal) !== parseInt(aVal) && penalties) {
+      showToast('Penalty winner only applies when the match score is tied.', 'error');
+      return;
+    }
   }
 
   const results = getData('results') || {};
