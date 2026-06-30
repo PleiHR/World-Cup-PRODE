@@ -1876,14 +1876,14 @@ const MATCHES = [
 {id:'r32_14',round:'Round of 32',home:'Australia',away:'Egypt',date:'2026-07-03T14:00',venue:'AT&T Stadium, Arlington, TX'},
 {id:'r32_15',round:'Round of 32',home:'Argentina',away:'Cape Verde',date:'2026-07-03T18:00',venue:'Hard Rock Stadium, Miami Gardens, FL'},
 {id:'r32_16',round:'Round of 32',home:'Colombia',away:'Ghana',date:'2026-07-03T21:30',venue:'Arrowhead Stadium, Kansas City, MO'},
-{id:'r16_01',round:'Round of 16',home:'Ganador R32 #11',away:'Ganador R32 #12',date:'2026-07-04T13:00',venue:'Vancouver Stadium'},
-{id:'r16_02',round:'Round of 16',home:'Ganador R32 #9',away:'Ganador R32 #10',date:'2026-07-04T17:00',venue:'Houston Stadium'},
-{id:'r16_03',round:'Round of 16',home:'Ganador R32 #17',away:'Ganador R32 #18',date:'2026-07-05T16:00',venue:'Dallas Stadium'},
-{id:'r16_04',round:'Round of 16',home:'Ganador R32 #19',away:'Ganador R32 #20',date:'2026-07-05T20:00',venue:'Atlanta Stadium'},
-{id:'r16_05',round:'Round of 16',home:'Ganador R32 #13',away:'Ganador R32 #14',date:'2026-07-06T15:00',venue:'Philadelphia Stadium'},
-{id:'r16_06',round:'Round of 16',home:'Ganador R32 #15',away:'Ganador R32 #16',date:'2026-07-06T20:00',venue:'Seattle Stadium'},
-{id:'r16_07',round:'Round of 16',home:'Ganador R32 #21',away:'Ganador R32 #22',date:'2026-07-07T12:00',venue:'Mexico City Stadium'},
-{id:'r16_08',round:'Round of 16',home:'Ganador R32 #23',away:'Ganador R32 #24',date:'2026-07-07T16:00',venue:'New York New Jersey Stadium'},
+{id:'r16_01',round:'Round of 16',home:'Ganador R32 #11',away:'Ganador R32 #14',date:'2026-07-04T13:00',venue:'Vancouver Stadium'},
+{id:'r16_02',round:'Round of 16',home:'Ganador R32 #9',away:'Ganador R32 #12',date:'2026-07-04T17:00',venue:'Houston Stadium'},
+{id:'r16_03',round:'Round of 16',home:'Ganador R32 #10',away:'Ganador R32 #13',date:'2026-07-05T16:00',venue:'Dallas Stadium'},
+{id:'r16_04',round:'Round of 16',home:'Ganador R32 #15',away:'Ganador R32 #16',date:'2026-07-05T20:00',venue:'Atlanta Stadium'},
+{id:'r16_05',round:'Round of 16',home:'Ganador R32 #20',away:'Ganador R32 #19',date:'2026-07-06T15:00',venue:'Philadelphia Stadium'},
+{id:'r16_06',round:'Round of 16',home:'Ganador R32 #18',away:'Ganador R32 #17',date:'2026-07-06T20:00',venue:'Seattle Stadium'},
+{id:'r16_07',round:'Round of 16',home:'Ganador R32 #23',away:'Ganador R32 #22',date:'2026-07-07T12:00',venue:'Mexico City Stadium'},
+{id:'r16_08',round:'Round of 16',home:'Ganador R32 #21',away:'Ganador R32 #24',date:'2026-07-07T16:00',venue:'New York New Jersey Stadium'},
 {id:'qf1',round:'Quarterfinal',home:'Ganador Octavos 2',away:'Ganador Octavos 1',date:'2026-07-09T16:00',venue:'Boston Stadium'},
 {id:'qf2',round:'Quarterfinal',home:'Ganador Octavos 6',away:'Ganador Octavos 5',date:'2026-07-10T15:00',venue:'Los Angeles Stadium'},
 {id:'qf3',round:'Quarterfinal',home:'Ganador Octavos 3',away:'Ganador Octavos 4',date:'2026-07-11T17:00',venue:'Kansas City Stadium'},
@@ -1936,19 +1936,19 @@ const BRACKET_SLOTS = {
   r32_16: { home: {type:'group',group:'D',pos:2}, away: {type:'group',group:'G',pos:2} },
 
   // Round of 16 — fixed bracket path. R32 display numbers #9-#24 map to r32_01-r32_16.
-  r16_01: { home: {type:'winner',matchId:'r32_03',label:'R32 #11'}, away: {type:'winner',matchId:'r32_04',label:'R32 #12'} },
-  r16_02: { home: {type:'winner',matchId:'r32_01',label:'R32 #9'},  away: {type:'winner',matchId:'r32_02',label:'R32 #10'} },
-  r16_03: { home: {type:'winner',matchId:'r32_09',label:'R32 #17'}, away: {type:'winner',matchId:'r32_10',label:'R32 #18'} },
-  r16_04: { home: {type:'winner',matchId:'r32_11',label:'R32 #19'}, away: {type:'winner',matchId:'r32_12',label:'R32 #20'} },
-  r16_05: { home: {type:'winner',matchId:'r32_05',label:'R32 #13'}, away: {type:'winner',matchId:'r32_06',label:'R32 #14'} },
-  r16_06: { home: {type:'winner',matchId:'r32_07',label:'R32 #15'}, away: {type:'winner',matchId:'r32_08',label:'R32 #16'} },
-  r16_07: { home: {type:'winner',matchId:'r32_13',label:'R32 #21'}, away: {type:'winner',matchId:'r32_14',label:'R32 #22'} },
-  r16_08: { home: {type:'winner',matchId:'r32_15',label:'R32 #23'}, away: {type:'winner',matchId:'r32_16',label:'R32 #24'} },
+  r16_01: { home: {type:'winner',matchId:'r32_03',label:'R32 #11'}, away: {type:'winner',matchId:'r32_06',label:'R32 #14'} },
+  r16_02: { home: {type:'winner',matchId:'r32_01',label:'R32 #9'},  away: {type:'winner',matchId:'r32_04',label:'R32 #12'} },
+  r16_03: { home: {type:'winner',matchId:'r32_02',label:'R32 #10'}, away: {type:'winner',matchId:'r32_05',label:'R32 #13'} },
+  r16_04: { home: {type:'winner',matchId:'r32_07',label:'R32 #15'}, away: {type:'winner',matchId:'r32_08',label:'R32 #16'} },
+  r16_05: { home: {type:'winner',matchId:'r32_12',label:'R32 #20'}, away: {type:'winner',matchId:'r32_11',label:'R32 #19'} },
+  r16_06: { home: {type:'winner',matchId:'r32_10',label:'R32 #18'}, away: {type:'winner',matchId:'r32_09',label:'R32 #17'} },
+  r16_07: { home: {type:'winner',matchId:'r32_15',label:'R32 #23'}, away: {type:'winner',matchId:'r32_14',label:'R32 #22'} },
+  r16_08: { home: {type:'winner',matchId:'r32_13',label:'R32 #21'}, away: {type:'winner',matchId:'r32_16',label:'R32 #24'} },
 
   // Quarterfinals — fixed bracket path from Octavos.
-  qf1: { home: {type:'winner',matchId:'r16_02',label:'Octavos 2'}, away: {type:'winner',matchId:'r16_01',label:'Octavos 1'} },
-  qf2: { home: {type:'winner',matchId:'r16_06',label:'Octavos 6'}, away: {type:'winner',matchId:'r16_05',label:'Octavos 5'} },
-  qf3: { home: {type:'winner',matchId:'r16_03',label:'Octavos 3'}, away: {type:'winner',matchId:'r16_04',label:'Octavos 4'} },
+  qf1: { home: {type:'winner',matchId:'r16_01',label:'Octavos 1'}, away: {type:'winner',matchId:'r16_02',label:'Octavos 2'} },
+  qf2: { home: {type:'winner',matchId:'r16_03',label:'Octavos 3'}, away: {type:'winner',matchId:'r16_04',label:'Octavos 4'} },
+  qf3: { home: {type:'winner',matchId:'r16_05',label:'Octavos 5'}, away: {type:'winner',matchId:'r16_06',label:'Octavos 6'} },
   qf4: { home: {type:'winner',matchId:'r16_07',label:'Octavos 7'}, away: {type:'winner',matchId:'r16_08',label:'Octavos 8'} },
 
   // Semifinals — winners from Quarters
@@ -3258,16 +3258,16 @@ function renderBracketMap() {
     else if (finalRes.penalties) champion = finalRes.penalties;
   }
 
-  // Layout follows the fixed bracket path:
-  // qf1 = Octavos 2 vs 1, qf2 = Octavos 6 vs 5, qf3 = Octavos 3 vs 4, qf4 = Octavos 7 vs 8.
+  // Layout: left R32 pairs feed left R16, right R32 pairs feed right R16.
+  // qf1 = Octavos 1 vs 2, qf2 = Octavos 3 vs 4, qf3 = Octavos 5 vs 6, qf4 = Octavos 7 vs 8.
 
-  const leftR32 = ['r32_01','r32_02','r32_03','r32_04','r32_07','r32_08','r32_05','r32_06'];
-  const leftR16 = ['r16_02','r16_01','r16_06','r16_05'];
+  const leftR32 = ['r32_03','r32_06','r32_01','r32_04','r32_02','r32_05','r32_07','r32_08'];
+  const leftR16 = ['r16_01','r16_02','r16_03','r16_04'];
   const leftQF  = ['qf1','qf2'];
   const leftSF  = ['sf1'];
 
-  const rightR32 = ['r32_09','r32_10','r32_11','r32_12','r32_13','r32_14','r32_15','r32_16'];
-  const rightR16 = ['r16_03','r16_04','r16_07','r16_08'];
+  const rightR32 = ['r32_12','r32_11','r32_10','r32_09','r32_15','r32_14','r32_13','r32_16'];
+  const rightR16 = ['r16_05','r16_06','r16_07','r16_08'];
   const rightQF  = ['qf3','qf4'];
   const rightSF  = ['sf2'];
 
