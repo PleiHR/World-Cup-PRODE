@@ -117,7 +117,6 @@ function firebasePut(path, data) {
 async function main() {
   console.log('🔄 Fetching WC2026 results from football-data.org...');
 
-  // Try multiple URL approaches to find finished matches
   const urls = [
     'https://api.football-data.org/v4/competitions/WC/matches?status=FINISHED',
     'https://api.football-data.org/v4/competitions/WC/matches?season=2026&status=FINISHED',
@@ -132,7 +131,7 @@ async function main() {
       console.log(`URL: ${url.substring(40)} → ${all.length} total matches, ${all.filter(m=>m.status==='FINISHED').length} finished`);
       const finished = all.filter(m => m.status === 'FINISHED');
       if (finished.length > 0) { fdMatches = finished; break; }
-      if (all.length > 0 && fdMatches.length === 0) fdMatches = finished; // keep trying
+      if (all.length > 0 && fdMatches.length === 0) fdMatches = finished;
     } catch(e) {
       console.log(`URL failed: ${e.message.substring(0,100)}`);
     }
@@ -152,7 +151,7 @@ async function main() {
     const awayTeam = normalize(fdMatch.awayTeam.name);
 
     // For ET/penalty matches, fullTime = 90min score and extraTime = ET goals (delta).
-    // Add them together to get the true final score, never use penalties as match score.
+    // Add them to get the true final score; never use penalty shootout as the score.
     const ft = fdMatch.score.fullTime;
     const et = fdMatch.score.extraTime;
     const duration = fdMatch.score?.duration;
