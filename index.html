@@ -4092,7 +4092,7 @@ function setResult(matchId, home, away, isKO) {
   }
 
   const results = getData('results') || {};
-  results[matchId] = { homeGoals: parseInt(hVal), awayGoals: parseInt(aVal), penalties, setAt: Date.now() };
+  results[matchId] = { homeGoals: parseInt(hVal), awayGoals: parseInt(aVal), penalties, setAt: Date.now(), manualOverride: true };
   setData('results', results);
   applyBracket();
   showToast(`Result saved: ${hVal} — ${aVal}`, 'success');
@@ -8249,7 +8249,7 @@ function setResult(matchId, home, away, isKO) {
   }
 
   const results = getData('results') || {};
-  results[matchId] = { homeGoals: parseInt(hVal), awayGoals: parseInt(aVal), penalties, setAt: Date.now() };
+  results[matchId] = { homeGoals: parseInt(hVal), awayGoals: parseInt(aVal), penalties, setAt: Date.now(), manualOverride: true };
   setData('results', results);
   applyBracket();
   showToast(`Result saved: ${hVal} — ${aVal}`, 'success');
