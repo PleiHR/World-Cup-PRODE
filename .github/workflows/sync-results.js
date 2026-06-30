@@ -150,8 +150,16 @@ async function main() {
   fdMatches.forEach(fdMatch => {
     const homeTeam = normalize(fdMatch.homeTeam.name);
     const awayTeam = normalize(fdMatch.awayTeam.name);
-    const hg = fdMatch.score.fullTime.home;
-    const ag = fdMatch.score.fullTime.away;
+
+    // For ET/penalty matches, fullTime = 90min score and extraTime = ET goals (delta).
+    // Add them together to get the true final score, never use penalties as match score.
+    const ft = fdMatch.score.fullTime;
+    const et = fdMatch.score.extraTime;
+    const duration = fdMatch.score?.duration;
+    const useET = (duration === 'EXTRA_TIME' || duration === 'PENALTY_SHOOTOUT')
+                  && et && et.home !== null;
+    const hg = useET ? ft.home + et.home : ft.home;
+    const ag = useET ? ft.away + et.away : ft.away;
     if (hg === null || hg === undefined) return;
 
     let ourMatch = MATCHES.find(m =>
