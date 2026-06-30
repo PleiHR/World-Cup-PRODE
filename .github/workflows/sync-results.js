@@ -185,6 +185,10 @@ async function main() {
     }
 
     const existing = existingResults[ourMatch.id];
+    if (existing && existing.manualOverride) {
+      console.log(`⏭️  ${ourMatch.id}: skipping auto-sync (manually overridden by admin)`);
+      return;
+    }
     if (!existing || existing.homeGoals !== newHome || existing.awayGoals !== newAway) {
       existingResults[ourMatch.id] = {
         homeGoals: newHome, awayGoals: newAway,
