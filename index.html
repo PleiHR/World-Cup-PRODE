@@ -2650,7 +2650,7 @@ function calcPoints(pred, result, matchId) {
   if (pHome === rHome && pAway === rAway) pts += 5;
 
   // Penalty bonus (knockout draws only)
-  if (result.penalties && pred.penalties) {
+  if (result.penalties && pred.penalties && predWinner === 'draw' && realWinner === 'draw') {
     if (pred.penalties === result.penalties) pts += 3;
   }
 
@@ -2669,7 +2669,7 @@ function getBreakdown(pred, result) {
   const realWinner = rHome > rAway ? 'A' : rAway > rHome ? 'B' : 'draw';
   if (predWinner === realWinner) parts.push('Outcome +3');
   if (pHome === rHome && pAway === rAway) parts.push('Exact +5');
-  if (result.penalties && pred.penalties && pred.penalties === result.penalties) parts.push('Penalties +3');
+  if (result.penalties && pred.penalties && predWinner === 'draw' && realWinner === 'draw' && pred.penalties === result.penalties) parts.push('Penalties +3');
   return parts.join(' · ');
 }
 
