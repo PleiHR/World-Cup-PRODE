@@ -2110,7 +2110,7 @@ function resolveSlot(slot, results, standings, manualOverrides) {
 
 // Update MATCHES home/away for knockout rounds based on results
 function applyBracket() {
-  const results = getData('results') || {};
+  const results = getResults() || {};
   const manualOverrides = getData('bracketOverrides') || {};
   const standings = computeGroupStandings(results);
 
@@ -2149,7 +2149,7 @@ function getPossibleTeams(matchId, pos) {
   if (!slot) return getAllTeams();
 
   if (slot.type === 'group') {
-    const results = getData('results') || {};
+    const results = getResults() || {};
     const standings = computeGroupStandings(results);
     const grp = standings[slot.group];
     if (grp && grp.length) {
@@ -2161,7 +2161,7 @@ function getPossibleTeams(matchId, pos) {
     }
   }
   if (slot.type === 'best3rd') {
-    const results = getData('results') || {};
+    const results = getResults() || {};
     const standings = computeGroupStandings(results);
     const teams = [];
     slot.groups.forEach(g => {
@@ -2231,9 +2231,14 @@ function getData(key) {
   return _cache[key] !== undefined ? _cache[key] : null;
 }
 
+// Merge auto-synced results with admin manual overrides (admin takes priority)
+function getResults() {
+  return Object.assign({}, getData('results') || {}, getData('adminResults') || {});
+}
+
 // Subscribe to all shared keys — keeps cache in sync in real time
 function subscribeAll() {
-  const keys = ['users','results','predictions','bracketOverrides','stageWinners'];
+  const keys = ['users','results','adminResults','predictions','bracketOverrides','stageWinners'];
   keys.forEach(key => {
     db.ref('wc26/' + key).on('value', snap => {
       let val = snap.val();
@@ -2775,7 +2780,7 @@ function setGroupFilter(g, el) {
 
 function renderMatches() {
   applyBracket();
-  const results = getData('results') || {};
+  const results = getResults() || {};
   const allPreds = getData('predictions') || {};
   const myPreds = (allPreds[currentUser.email] || {});
   const search = (document.getElementById('matchSearch') || {}).value?.toLowerCase() || '';
@@ -3208,7 +3213,7 @@ function switchFixtureTab(tab, el) {
 // ============================================================
 function renderBracketMap() {
   applyBracket();
-  const results = getData('results') || {};
+  const results = getResults() || {};
   const container = document.getElementById('bracketMapContainer');
 
   function matchCard(mid, compact) {
@@ -3314,7 +3319,7 @@ function renderBracketMap() {
 // ============================================================
 function renderFixture() {
   applyBracket();
-  const results = getData('results') || {};
+  const results = getResults() || {};
   const standings = computeGroupStandings(results);
   const container = document.getElementById('fixtureContainer');
 
@@ -3453,7 +3458,7 @@ function renderFixture() {
 function computeStageWinnersIfNeeded() {
   // Only admin can save stage winners; called when results change
   if (!currentUser || !currentUser.isAdmin) return;
-  const results = getData('results') || {};
+  const results = getResults() || {};
   const users = getData('users') || {};
   const allPreds = getData('predictions') || {};
   const stageWinners = getData('stageWinners') || {};
@@ -3520,7 +3525,7 @@ function computeStageWinnersIfNeeded() {
 function renderRanking() {
   const users = getData('users') || {};
   const allPreds = getData('predictions') || {};
-  const results = getData('results') || {};
+  const results = getResults() || {};
   const stageWinners = getData('stageWinners') || {};
 
   // Auto-compute stage winners if admin
@@ -3623,7 +3628,7 @@ function renderUsersPanel() {
   if (!currentUser.isAdmin) return '';
   const users = getData('users') || {};
   const predictions = getData('predictions') || {};
-  const results = getData('results') || {};
+  const results = getResults() || {};
 
   const userList = Object.values(users).sort((a,b) => {
     if (a.isAdmin) return -1;
@@ -3922,7 +3927,7 @@ function renderAdmin() {
     return;
   }
   applyBracket();
-  const results = getData('results') || {};
+  const results = getResults() || {};
   const manualOverrides = getData('bracketOverrides') || {};
   const rounds = ['Group Stage','Round of 32','Round of 16','Quarterfinal','Semifinal','Third Place','Final'];
   let html = '';
@@ -4091,9 +4096,9 @@ function setResult(matchId, home, away, isKO) {
     }
   }
 
-  const results = getData('results') || {};
-  results[matchId] = { homeGoals: parseInt(hVal), awayGoals: parseInt(aVal), penalties, setAt: Date.now(), manualOverride: true };
-  setData('results', results);
+  const adminResults = getData('adminResults') || {};
+  adminResults[matchId] = { homeGoals: parseInt(hVal), awayGoals: parseInt(aVal), penalties, setAt: Date.now(), manualOverride: true };
+  setData('adminResults', adminResults);
   applyBracket();
   showToast(`Result saved: ${hVal} — ${aVal}`, 'success');
   renderAdmin();
@@ -4102,13 +4107,13 @@ function setResult(matchId, home, away, isKO) {
 function unsetResult(matchId) {
   if (!currentUser.isAdmin) return;
 
-  const results = getData('results') || {};
+  const adminResults = getData('adminResults') || {};
 
-  if (!results[matchId]) return;
+  if (!adminResults[matchId]) return;
 
-  delete results[matchId];
+  delete adminResults[matchId];
 
-  setData('results', results);
+  setData('adminResults', adminResults);
 
   applyBracket();
   showToast('↩️ Result removed and bracket recalculated', 'success');
@@ -6266,7 +6271,7 @@ function resolveSlot(slot, results, standings, manualOverrides) {
 
 // Update MATCHES home/away for knockout rounds based on results
 function applyBracket() {
-  const results = getData('results') || {};
+  const results = getResults() || {};
   const manualOverrides = getData('bracketOverrides') || {};
   const standings = computeGroupStandings(results);
 
@@ -6304,7 +6309,7 @@ function getPossibleTeams(matchId, pos) {
   if (!slot) return getAllTeams();
 
   if (slot.type === 'group') {
-    const results = getData('results') || {};
+    const results = getResults() || {};
     const standings = computeGroupStandings(results);
     const grp = standings[slot.group];
     if (grp && grp.length) {
@@ -6316,7 +6321,7 @@ function getPossibleTeams(matchId, pos) {
     }
   }
   if (slot.type === 'best3rd') {
-    const results = getData('results') || {};
+    const results = getResults() || {};
     const standings = computeGroupStandings(results);
     const teams = [];
     slot.groups.forEach(g => {
@@ -6386,9 +6391,14 @@ function getData(key) {
   return _cache[key] !== undefined ? _cache[key] : null;
 }
 
+// Merge auto-synced results with admin manual overrides (admin takes priority)
+function getResults() {
+  return Object.assign({}, getData('results') || {}, getData('adminResults') || {});
+}
+
 // Subscribe to all shared keys — keeps cache in sync in real time
 function subscribeAll() {
-  const keys = ['users','results','predictions','bracketOverrides','stageWinners'];
+  const keys = ['users','results','adminResults','predictions','bracketOverrides','stageWinners'];
   keys.forEach(key => {
     db.ref('wc26/' + key).on('value', snap => {
       let val = snap.val();
@@ -6930,7 +6940,7 @@ function setGroupFilter(g, el) {
 
 function renderMatches() {
   applyBracket();
-  const results = getData('results') || {};
+  const results = getResults() || {};
   const allPreds = getData('predictions') || {};
   const myPreds = (allPreds[currentUser.email] || {});
   const search = (document.getElementById('matchSearch') || {}).value?.toLowerCase() || '';
@@ -7363,7 +7373,7 @@ function switchFixtureTab(tab, el) {
 // ============================================================
 function renderBracketMap() {
   applyBracket();
-  const results = getData('results') || {};
+  const results = getResults() || {};
   const container = document.getElementById('bracketMapContainer');
 
   function matchCard(mid, compact) {
@@ -7471,7 +7481,7 @@ function renderBracketMap() {
 // ============================================================
 function renderFixture() {
   applyBracket();
-  const results = getData('results') || {};
+  const results = getResults() || {};
   const standings = computeGroupStandings(results);
   const container = document.getElementById('fixtureContainer');
 
@@ -7610,7 +7620,7 @@ function renderFixture() {
 function computeStageWinnersIfNeeded() {
   // Only admin can save stage winners; called when results change
   if (!currentUser || !currentUser.isAdmin) return;
-  const results = getData('results') || {};
+  const results = getResults() || {};
   const users = getData('users') || {};
   const allPreds = getData('predictions') || {};
   const stageWinners = getData('stageWinners') || {};
@@ -7677,7 +7687,7 @@ function computeStageWinnersIfNeeded() {
 function renderRanking() {
   const users = getData('users') || {};
   const allPreds = getData('predictions') || {};
-  const results = getData('results') || {};
+  const results = getResults() || {};
   const stageWinners = getData('stageWinners') || {};
 
   // Auto-compute stage winners if admin
@@ -7780,7 +7790,7 @@ function renderUsersPanel() {
   if (!currentUser.isAdmin) return '';
   const users = getData('users') || {};
   const predictions = getData('predictions') || {};
-  const results = getData('results') || {};
+  const results = getResults() || {};
 
   const userList = Object.values(users).sort((a,b) => {
     if (a.isAdmin) return -1;
@@ -8079,7 +8089,7 @@ function renderAdmin() {
     return;
   }
   applyBracket();
-  const results = getData('results') || {};
+  const results = getResults() || {};
   const manualOverrides = getData('bracketOverrides') || {};
   const rounds = ['Group Stage','Round of 32','Round of 16','Quarterfinal','Semifinal','Third Place','Final'];
   let html = '';
@@ -8248,9 +8258,9 @@ function setResult(matchId, home, away, isKO) {
     }
   }
 
-  const results = getData('results') || {};
-  results[matchId] = { homeGoals: parseInt(hVal), awayGoals: parseInt(aVal), penalties, setAt: Date.now(), manualOverride: true };
-  setData('results', results);
+  const adminResults = getData('adminResults') || {};
+  adminResults[matchId] = { homeGoals: parseInt(hVal), awayGoals: parseInt(aVal), penalties, setAt: Date.now(), manualOverride: true };
+  setData('adminResults', adminResults);
   applyBracket();
   showToast(`Result saved: ${hVal} — ${aVal}`, 'success');
   renderAdmin();
@@ -8259,13 +8269,13 @@ function setResult(matchId, home, away, isKO) {
 function unsetResult(matchId) {
   if (!currentUser.isAdmin) return;
 
-  const results = getData('results') || {};
+  const adminResults = getData('adminResults') || {};
 
-  if (!results[matchId]) return;
+  if (!adminResults[matchId]) return;
 
-  delete results[matchId];
+  delete adminResults[matchId];
 
-  setData('results', results);
+  setData('adminResults', adminResults);
 
   applyBracket();
   showToast('↩️ Result removed and bracket recalculated', 'success');
