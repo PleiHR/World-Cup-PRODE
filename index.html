@@ -1135,6 +1135,9 @@ body {
   align-items: center;
   gap: 8px;
 }
+.table-scroll {
+  overflow-x: auto;
+}
 .users-table {
   width: 100%;
   border-collapse: collapse;
@@ -1875,7 +1878,7 @@ const MATCHES = [
 {id:'r32_05',round:'Round of 32',home:'Ivory Coast',away:'Norway',date:'2026-06-30T13:00',venue:'AT&T Stadium, Arlington, TX'},
 {id:'r32_06',round:'Round of 32',home:'France',away:'Sweden',date:'2026-06-30T17:00',venue:'MetLife Stadium, East Rutherford, NJ'},
 {id:'r32_07',round:'Round of 32',home:'Mexico',away:'Ecuador',date:'2026-06-30T21:00',venue:'Estadio Banorte, Mexico City'},
-{id:'r32_08',round:'Round of 32',home:'England',away:'DR Congo',date:'2026-07-01T12:00',venue:'Mercedes-Benz Stadium, Atlanta, GA'},
+{id:'r32_08',round:'Round of 32',home:'England',away:'DRC',date:'2026-07-01T12:00',venue:'Mercedes-Benz Stadium, Atlanta, GA'},
 {id:'r32_09',round:'Round of 32',home:'Belgium',away:'Senegal',date:'2026-07-01T16:00',venue:'Lumen Field, Seattle, WA'},
 {id:'r32_10',round:'Round of 32',home:'USA',away:'Bosnia & Herzegovina',date:'2026-07-01T20:00',venue:"Levi's Stadium, Santa Clara, CA"},
 {id:'r32_11',round:'Round of 32',home:'Spain',away:'Austria',date:'2026-07-02T15:00',venue:'SoFi Stadium, Inglewood, CA'},
@@ -1884,8 +1887,8 @@ const MATCHES = [
 {id:'r32_14',round:'Round of 32',home:'Australia',away:'Egypt',date:'2026-07-03T14:00',venue:'AT&T Stadium, Arlington, TX'},
 {id:'r32_15',round:'Round of 32',home:'Argentina',away:'Cape Verde',date:'2026-07-03T18:00',venue:'Hard Rock Stadium, Miami Gardens, FL'},
 {id:'r32_16',round:'Round of 32',home:'Colombia',away:'Ghana',date:'2026-07-03T21:30',venue:'Arrowhead Stadium, Kansas City, MO'},
-{id:'r16_01',round:'Round of 16',home:'Ganador R32 #11',away:'Ganador R32 #14',date:'2026-07-04T13:00',venue:'Vancouver Stadium'},
-{id:'r16_02',round:'Round of 16',home:'Ganador R32 #9',away:'Ganador R32 #12',date:'2026-07-04T17:00',venue:'Houston Stadium'},
+{id:'r16_01',round:'Round of 16',home:'Ganador R32 #11',away:'Ganador R32 #14',date:'2026-07-04T17:00',venue:'Vancouver Stadium'},
+{id:'r16_02',round:'Round of 16',home:'Ganador R32 #9',away:'Ganador R32 #12',date:'2026-07-04T13:00',venue:'Houston Stadium'},
 {id:'r16_03',round:'Round of 16',home:'Ganador R32 #10',away:'Ganador R32 #13',date:'2026-07-05T16:00',venue:'Dallas Stadium'},
 {id:'r16_04',round:'Round of 16',home:'Ganador R32 #15',away:'Ganador R32 #16',date:'2026-07-05T20:00',venue:'Atlanta Stadium'},
 {id:'r16_05',round:'Round of 16',home:'Ganador R32 #20',away:'Ganador R32 #19',date:'2026-07-06T15:00',venue:'Philadelphia Stadium'},
@@ -3673,6 +3676,7 @@ function renderUsersPanel() {
 
   return `<div class="users-panel">
     <div class="users-panel-header">👥 Users & Password Reset <span style="font-size:12px;font-weight:400;opacity:0.7;margin-left:8px">(${userList.length} registered)</span></div>
+    <div class="table-scroll">
     <table class="users-table">
       <thead>
         <tr>
@@ -3686,6 +3690,7 @@ function renderUsersPanel() {
       </thead>
       <tbody>${rows}</tbody>
     </table>
+    </div>
   </div>`;
 }
 
@@ -3840,7 +3845,7 @@ const TEAM_NAME_MAP = {
   'Scotland': 'Scotland', 'Australia': 'Australia', 'Turkey': 'Turkey', 'Germany': 'Germany',
   'Curaçao': 'Curaçao', 'Curacao': 'Curaçao', 'Netherlands': 'Netherlands', 'Japan': 'Japan',
   "Côte d'Ivoire": 'Ivory Coast', 'Ivory Coast': 'Ivory Coast', 'Ecuador': 'Ecuador',
-  'Ukraine': 'Sweden', 'Sweden': 'Sweden', 'Tunisia': 'Tunisia', 'Spain': 'Spain', 'Cabo Verde': 'Cape Verde',
+  'Sweden': 'Sweden', 'Tunisia': 'Tunisia', 'Spain': 'Spain', 'Cabo Verde': 'Cape Verde',
   'Belgium': 'Belgium', 'Egypt': 'Egypt', 'Saudi Arabia': 'Saudi Arabia', 'Uruguay': 'Uruguay',
   'Iran': 'Iran', 'New Zealand': 'New Zealand', 'France': 'France', 'Senegal': 'Senegal',
   'Iraq': 'Iraq', 'Norway': 'Norway', 'Argentina': 'Argentina', 'Algeria': 'Algeria',
@@ -3951,7 +3956,9 @@ function renderAdmin() {
     const isKnockout = round !== 'Group Stage';
 
     if (isKnockout && roundMatches.length) {
-      html += `<div class="bracket-info-banner">⚡ <strong>${round}:</strong> Teams update automatically from results. Use the dropdowns below to override manually if needed.</div>`;
+      html += round === 'Round of 32'
+        ? `<div class="bracket-info-banner">⚡ <strong>${round}:</strong> Teams are fixed from the group draw — enter results directly below.</div>`
+        : `<div class="bracket-info-banner">⚡ <strong>${round}:</strong> Teams update automatically from results. Use the dropdowns below to override manually if needed.</div>`;
     }
 
     html += `<div class="round-section"><div class="round-label" style="color:var(--red);border-color:rgba(217,79,79,0.25)">${round}</div><div class="matches-grid">`;
