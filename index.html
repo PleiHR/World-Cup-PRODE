@@ -3882,7 +3882,8 @@ async function syncResultsFromAPI() {
   if (!currentUser || !currentUser.isAdmin) return;
   setSyncStatus('syncing', '⏳ Triggering sync...');
   try {
-    // Call Cloudflare Worker which securely triggers GitHub Actions
+    // Call Cloudflare Worker, which fetches results from football-data.org and
+    // writes them to Firebase directly (also runs on its own 5-minute Cron Trigger)
     const res = await fetch('https://prode-sync.priscila-d72.workers.dev', {
       method: 'POST'
     });
