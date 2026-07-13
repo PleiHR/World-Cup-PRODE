@@ -1899,8 +1899,8 @@ const MATCHES = [
 {id:'qf2',round:'Quarterfinal',home:'Ganador Octavos 6',away:'Ganador Octavos 5',date:'2026-07-11T17:00',venue:'Los Angeles Stadium'},
 {id:'qf3',round:'Quarterfinal',home:'Ganador Octavos 3',away:'Ganador Octavos 4',date:'2026-07-10T15:00',venue:'Kansas City Stadium'},
 {id:'qf4',round:'Quarterfinal',home:'Ganador Octavos 7',away:'Ganador Octavos 8',date:'2026-07-11T21:00',venue:'Miami Stadium'},
-{id:'sf1',round:'Semifinal',home:'Ganador Cuartos 1',away:'Ganador Cuartos 2',date:'2026-07-14T15:00',venue:'Dallas Stadium'},
-{id:'sf2',round:'Semifinal',home:'Ganador Cuartos 3',away:'Ganador Cuartos 4',date:'2026-07-15T15:00',venue:'Atlanta Stadium'},
+{id:'sf1',round:'Semifinal',home:'Ganador Cuartos 1',away:'Ganador Cuartos 3',date:'2026-07-14T15:00',venue:'Dallas Stadium'},
+{id:'sf2',round:'Semifinal',home:'Ganador Cuartos 2',away:'Ganador Cuartos 4',date:'2026-07-15T15:00',venue:'Atlanta Stadium'},
 {id:'bronze',round:'Third Place',home:'Perdedor Semi 1',away:'Perdedor Semi 2',date:'2026-07-18T17:00',venue:'Miami Stadium'},
 {id:'final',round:'Final',home:'Ganador Semi 1',away:'Ganador Semi 2',date:'2026-07-19T15:00',venue:'New York New Jersey Stadium (MetLife)'},
 ];
@@ -1962,9 +1962,9 @@ const BRACKET_SLOTS = {
   qf3: { home: {type:'winner',matchId:'r16_05',label:'Octavos 5'}, away: {type:'winner',matchId:'r16_06',label:'Octavos 6'} },
   qf4: { home: {type:'winner',matchId:'r16_07',label:'Octavos 7'}, away: {type:'winner',matchId:'r16_08',label:'Octavos 8'} },
 
-  // Semifinals — winners from Quarters
-  sf1: { home: {type:'winner',matchId:'qf1',label:'Cuartos 1'}, away: {type:'winner',matchId:'qf2',label:'Cuartos 2'} },
-  sf2: { home: {type:'winner',matchId:'qf3',label:'Cuartos 3'}, away: {type:'winner',matchId:'qf4',label:'Cuartos 4'} },
+  // Semifinals — winners from Quarters (SF1 = QF1+QF3, SF2 = QF2+QF4, matching the real bracket)
+  sf1: { home: {type:'winner',matchId:'qf1',label:'Cuartos 1'}, away: {type:'winner',matchId:'qf3',label:'Cuartos 3'} },
+  sf2: { home: {type:'winner',matchId:'qf2',label:'Cuartos 2'}, away: {type:'winner',matchId:'qf4',label:'Cuartos 4'} },
 
   // Third Place — losers from Semifinals
   bronze: { home: {type:'loser',matchId:'sf1',label:'Semi 1'}, away: {type:'loser',matchId:'sf2',label:'Semi 2'} },
@@ -3274,17 +3274,17 @@ function renderBracketMap() {
     else if (finalRes.penalties) champion = finalRes.penalties;
   }
 
-  // Layout: left R32 pairs feed left R16, right R32 pairs feed right R16.
+  // Layout: left side feeds SF1 (QF1+QF3), right side feeds SF2 (QF2+QF4) — matches BRACKET_SLOTS.
   // qf1 = Octavos 1 vs 2, qf2 = Octavos 3 vs 4, qf3 = Octavos 5 vs 6, qf4 = Octavos 7 vs 8.
 
-  const leftR32 = ['r32_03','r32_06','r32_01','r32_04','r32_02','r32_05','r32_07','r32_08'];
-  const leftR16 = ['r16_01','r16_02','r16_03','r16_04'];
-  const leftQF  = ['qf1','qf2'];
+  const leftR32 = ['r32_03','r32_06','r32_01','r32_04','r32_12','r32_11','r32_10','r32_09'];
+  const leftR16 = ['r16_01','r16_02','r16_05','r16_06'];
+  const leftQF  = ['qf1','qf3'];
   const leftSF  = ['sf1'];
 
-  const rightR32 = ['r32_12','r32_11','r32_10','r32_09','r32_15','r32_14','r32_13','r32_16'];
-  const rightR16 = ['r16_05','r16_06','r16_07','r16_08'];
-  const rightQF  = ['qf3','qf4'];
+  const rightR32 = ['r32_02','r32_05','r32_07','r32_08','r32_15','r32_14','r32_13','r32_16'];
+  const rightR16 = ['r16_03','r16_04','r16_07','r16_08'];
+  const rightQF  = ['qf2','qf4'];
   const rightSF  = ['sf2'];
 
   const col = (ids, label, extra='') => `
