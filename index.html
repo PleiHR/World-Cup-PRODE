@@ -3726,7 +3726,7 @@ function computeStageWinnersIfNeeded() {
     });
     if (!allDone) return;
     // All matches in this stage done — compute winner
-    const ranked = Object.values(users).map(u => {
+    const ranked = Object.values(users).filter(u => !u.hiddenFromRanking).map(u => {
       const preds = allPreds[u.email] || {};
       let total = 0;
       stage.matches.forEach(mid => {
@@ -3762,7 +3762,7 @@ function renderRanking() {
   // Auto-compute stage winners if admin
   computeStageWinnersIfNeeded();
 
-  const ranked = Object.values(users).map(u => {
+  const ranked = Object.values(users).filter(u => !u.hiddenFromRanking).map(u => {
     const preds = allPreds[u.email] || {};
     let total = 0, exact = 0, outcome = 0, filled = 0;
     MATCHES.forEach(m => {
