@@ -1,0 +1,27 @@
+{
+  "rules": {
+    "wc26": {
+      "users": {
+        ".read": false,
+        ".write": false,
+        "$emailKey": {
+          ".read": true,
+          ".write": true,
+          "pass": {
+            ".read": false,
+            ".validate": false
+          }
+        }
+      },
+      "predictions":      { ".read": true, ".write": true },
+      "results":          { ".read": true, ".write": true },
+      "adminResults":     { ".read": true, ".write": true },
+      "bracketOverrides": { ".read": true, ".write": true },
+      "stageWinners":     { ".read": true, ".write": true }
+    },
+    "$rest": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}

@@ -401,6 +401,88 @@ body {
 }
 .set-result-btn:hover { background: rgba(217,79,79,0.14); }
 
+/* ===== PODIUM CEREMONY ===== */
+.podium-stage { background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 22px 20px 0; margin-bottom: 24px; position: relative; overflow: hidden; transition: background .8s; }
+.podium-stage.dark { background: #0A2E1E; }
+.podium-cap { font-family: 'Oswald', sans-serif; font-size: 11.5px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); text-align: center; height: 15px; position: relative; z-index: 50; transition: opacity .4s, color .4s; }
+.podium-cap.ondark { color: rgba(255,255,255,0.75); }
+.podium-cap.alert { color: #FF7B7B; }
+.podium-readout { height: 14px; margin: 5px 0 16px; text-align: center; font-size: 10.5px; letter-spacing: .4px;
+  color: var(--muted); font-variant-numeric: tabular-nums; opacity: 0; position: relative; z-index: 50; transition: opacity .4s, color .4s; }
+.podium-readout.ondark { color: rgba(255,255,255,0.55); }
+.podium { display: flex; align-items: flex-end; justify-content: center; gap: 12px; height: 300px; position: relative; z-index: 10; }
+.pod-slot { width: 186px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+.pod-fig { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 12px;
+  transition: opacity .7s ease, transform .8s cubic-bezier(.25,1.2,.5,1); }
+.pod-av { width: 62px; height: 62px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 19px; border: 3px solid #fff; position: relative;
+  box-shadow: 0 3px 10px rgba(13,61,40,0.15); }
+.pod-av .pod-medal { position: absolute; bottom: -8px; right: -10px; font-size: 22px; z-index: 3; }
+.pod-ring { position: absolute; left: -9px; top: -9px; width: 74px; height: 74px; transform: rotate(-90deg);
+  pointer-events: none; opacity: 0; transition: opacity .3s; }
+.pod-ring.active { opacity: 1; }
+.pod-ring circle { fill: none; stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 210; stroke-dashoffset: 210;
+  transition: stroke-dashoffset .8s linear, stroke .4s; }
+.pod-tick { position: absolute; top: -6px; left: -10px; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--green); color: #fff; font-size: 12px; display: flex; align-items: center; justify-content: center;
+  opacity: 0; transform: scale(.4); transition: opacity .35s, transform .4s cubic-bezier(.3,1.5,.5,1); z-index: 4; }
+.pod-tick.on { opacity: 1; transform: scale(1); }
+.pod-nm { font-size: 13.5px; font-weight: 600; text-align: center; line-height: 1.3; max-width: 178px; transition: color .6s; }
+.pod-pts { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--green); line-height: .95;
+  font-variant-numeric: tabular-nums; transition: color .4s; }
+.pod-st { font-size: 10.5px; color: var(--muted); transition: color .6s; }
+.podium-stage.dark .pod-nm { color: #fff; }
+.podium-stage.dark .pod-st { color: rgba(255,255,255,0.5); }
+.podium-stage.dark .pod-pts { color: #5FD9A4; }
+.pod-ped { width: 100%; border-radius: 10px 10px 0 0; background: linear-gradient(180deg, var(--green), var(--green-dark));
+  display: flex; align-items: flex-start; justify-content: center; padding-top: 12px; font-family: 'Bebas Neue', sans-serif;
+  font-size: 46px; color: rgba(255,255,255,0.9); line-height: 1; transition: height 1.1s cubic-bezier(.3,1.05,.4,1); }
+.pod-lights { position: absolute; left: 50%; top: 50%; width: 2800px; height: 1000px; margin: -500px 0 0 -1400px;
+  background: radial-gradient(circle at 50% 50%, transparent 0, transparent 96px, rgba(6,38,25,0.86) 250px);
+  opacity: 0; pointer-events: none; z-index: 30; transition: opacity .8s ease, transform 1s cubic-bezier(.45,.05,.3,1); }
+.pod-redwash { position: absolute; left: 50%; top: 50%; width: 420px; height: 420px; margin: -210px 0 0 -210px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(217,79,79,0.5) 0, rgba(217,79,79,0.18) 45%, transparent 72%);
+  opacity: 0; transition: opacity .7s; }
+.pod-glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, rgba(255,215,0,0.2) 0, transparent 46%);
+  opacity: 0; transition: opacity .7s; pointer-events: none; z-index: 20; }
+.pod-fly { position: absolute; z-index: 60; pointer-events: none; }
+.pod-cf { position: absolute; width: 8px; height: 14px; border-radius: 1px; z-index: 55; pointer-events: none; }
+.pod-strip { position: absolute; left: 0; right: 0; bottom: 0; background: #0A2E1E; color: #fff; padding: 11px 20px;
+  display: flex; align-items: center; gap: 14px; transform: translateY(105%);
+  transition: transform .85s cubic-bezier(.3,1.1,.4,1); z-index: 45; }
+.pod-strip .ps-pos { font-family: 'Bebas Neue', sans-serif; font-size: 27px; color: #FF8B8B; line-height: 1; }
+.pod-strip .ps-name { font-weight: 600; font-size: 14px; }
+.pod-strip .ps-void { font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 1px;
+  padding: 3px 9px; border-radius: 5px; background: rgba(217,79,79,0.22); color: #FF8B8B; border: 1px solid rgba(217,79,79,0.45); }
+.pod-strip .ps-why { font-size: 11.5px; color: rgba(255,255,255,0.6); margin-left: auto; text-align: right; }
+.pod-strip.on { transform: translateY(0); }
+.rest-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.rest-label { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 1.6px; text-transform: uppercase; }
+.rest-range { font-size: 11.5px; color: var(--muted); letter-spacing: .5px; }
+.rest-head::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.rrow-dq { background: rgba(217,79,79,0.07) !important; box-shadow: inset 3px 0 0 var(--red); }
+.rrow-dq .rank-pts { color: var(--red) !important; }
+.dq-flag { font-family: 'Oswald', sans-serif; font-size: 9.5px; font-weight: 600; letter-spacing: .8px; padding: 3px 8px;
+  border-radius: 5px; background: rgba(217,79,79,0.12); color: var(--red); border: 1px solid rgba(217,79,79,0.35);
+  text-transform: uppercase; margin-left: 8px; }
+
+@media (max-width: 640px) {
+  .podium { height: 232px; gap: 6px; }
+  .pod-slot { width: 33.3%; }
+  .pod-av { width: 46px; height: 46px; font-size: 15px; border-width: 2px; }
+  .pod-av .pod-medal { font-size: 17px; bottom: -6px; right: -7px; }
+  .pod-ring { left: -7px; top: -7px; width: 58px; height: 58px; }
+  .pod-nm { font-size: 11px; max-width: 100%; }
+  .pod-pts { font-size: 22px; }
+  .pod-st { font-size: 9px; }
+  .pod-ped { font-size: 32px; padding-top: 8px; }
+  .pod-lights { background: radial-gradient(circle at 50% 50%, transparent 0, transparent 68px, rgba(6,38,25,0.86) 180px); }
+  .pod-strip { flex-wrap: wrap; gap: 8px; padding: 9px 14px; }
+  .pod-strip .ps-why { margin-left: 0; flex-basis: 100%; text-align: left; font-size: 10.5px; }
+}
+
 /* RANKING */
 .ranking-table { width: 100%; border-collapse: collapse; }
 .ranking-table th {
@@ -2491,18 +2573,134 @@ function register() {
       err.textContent = 'This email is already registered. Sign in instead.'; err.style.display = 'block'; return;
     }
     const isAdmin = email === ADMIN_EMAIL;
-    const userData = { name, email, pass, isAdmin, joined: Date.now() };
-    // Write directly to Firebase with safe key
-    db.ref('wc26/users/' + emailKey).set(userData);
-    // Also update cache
-    const users = _cache['users'] || {};
-    users[email] = userData;
-    _cache['users'] = users;
+    const joined = Date.now();
+    hashPass({ joined }, pass).then(passHash => {
+      const userData = { name, email, passHash, isAdmin, joined };
+      // Write directly to Firebase with safe key
+      db.ref('wc26/users/' + emailKey).set(userData);
+      // Also update cache
+      const users = _cache['users'] || {};
+      users[email] = userData;
+      _cache['users'] = users;
 
-    currentUser = { name, email, isAdmin };
-    setSession(currentUser);
-    postLogin();
+      currentUser = { name, email, isAdmin };
+      setSession(currentUser);
+      postLogin();
+    });
   });
+}
+
+// ============================================================
+// PASSWORD HASHING
+// Passwords were previously stored in plaintext under users/<key>/pass.
+// They are now stored as a salted SHA-256 digest under passHash.
+// verifyPass() still accepts a legacy plaintext record and transparently
+// upgrades it on successful sign-in, so nobody has to reset anything.
+// Salt is the user's `joined` timestamp, which survives an email change.
+// ============================================================
+async function _sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+function _salt(userData) {
+  return 'wc26:v1:' + ((userData && userData.joined) ? userData.joined : 'legacy');
+}
+async function hashPass(userData, plain) {
+  return _sha256(_salt(userData) + ':' + plain);
+}
+async function verifyPass(userData, emailKey, plain) {
+  if (!userData) return false;
+  if (userData.passHash) {
+    return userData.passHash === await hashPass(userData, plain);
+  }
+  // legacy plaintext record — verify, then upgrade in place
+  if (typeof userData.pass === 'string') {
+    if (userData.pass !== plain) return false;
+    try {
+      const h = await hashPass(userData, plain);
+      await db.ref('wc26/users/' + emailKey).update({ passHash: h, pass: null });
+      userData.passHash = h;
+      delete userData.pass;
+    } catch (e) {
+      console.warn('Password upgrade failed (login still succeeded):', e);
+    }
+    return true;
+  }
+  return false;
+}
+
+// Stage winners are normally locked forever. When someone forfeits, any stage
+// they won has to be reissued to the next eligible participant. This clears the
+// locked winners and recomputes them with forfeited participants excluded.
+// Admin-only. Reports the before/after so the change is visible, not silent.
+function recomputeStageWinners() {
+  if (!currentUser || !currentUser.isAdmin) return;
+  const before = getData('stageWinners') || {};
+  const beforeSummary = Object.keys(before).map(k => `${before[k].label}: ${before[k].name}`).join(' | ');
+  console.log('Stage winners BEFORE →', beforeSummary || '(none)');
+  db.ref('wc26/stageWinners').set(null).then(() => {
+    _cache['stageWinners'] = {};
+    computeStageWinnersIfNeeded();
+    setTimeout(() => {
+      const after = getData('stageWinners') || {};
+      const afterSummary = Object.keys(after).map(k => `${after[k].label}: ${after[k].name}`).join(' | ');
+      console.log('Stage winners AFTER  →', afterSummary || '(none)');
+      showToast('🏅 Stage prizes recomputed', 'success');
+      if (typeof renderRanking === 'function') renderRanking();
+    }, 600);
+  }).catch(e => { showToast('Failed to recompute stage prizes', 'error'); console.error(e); });
+}
+
+// Mark a participant as having forfeited. Their points are preserved on the
+// record — they are simply sorted last and displayed as void. Reversible.
+function toggleForfeit(email) {
+  if (!currentUser || !currentUser.isAdmin) return;
+  const emailKey = email.replace(/\./g, '_dot_');
+  db.ref('wc26/users/' + emailKey).once('value').then(snap => {
+    const u = snap.val();
+    if (!u) { showToast('User not found', 'error'); return; }
+    const next = !(u.disqualified === true);
+    const patch = next
+      ? { disqualified: true, dqReason: 'Used AI for predictions · forfeited 1st place', dqAt: Date.now() }
+      : { disqualified: null, dqReason: null, dqAt: null };
+    return db.ref('wc26/users/' + emailKey).update(patch).then(() => {
+      const cached = _cache['users'] || {};
+      if (cached[email]) {
+        if (next) cached[email].disqualified = true; else delete cached[email].disqualified;
+      }
+
+      showToast(next ? '🤖 Marked as forfeited' : '↩️ Forfeit removed', 'success');
+      if (typeof renderAdmin === 'function') renderAdmin();
+    });
+  }).catch(e => { showToast('Failed to update', 'error'); console.error(e); });
+}
+
+// One-time bulk migration. Admin-only. Safe to run more than once —
+// records that already have a passHash are skipped. Run it from the browser
+// console as migratePasswords(), or from the button on the Admin page.
+async function migratePasswords() {
+  if (!currentUser || !currentUser.isAdmin) {
+    console.warn('migratePasswords: admin only'); return;
+  }
+  const snap = await db.ref('wc26/users').once('value');
+  const users = snap.val() || {};
+  let done = 0, skipped = 0, failed = 0;
+  for (const key of Object.keys(users)) {
+    const u = users[key];
+    if (u.passHash) { skipped++; continue; }
+    if (typeof u.pass !== 'string') { skipped++; continue; }
+    try {
+      const passHash = await hashPass(u, u.pass);
+      await db.ref('wc26/users/' + key).update({ passHash, pass: null });
+      done++;
+    } catch (e) {
+      console.error('failed for ' + key, e); failed++;
+    }
+  }
+  const msg = `Hashed ${done}, already done ${skipped}, failed ${failed}`;
+  console.log(msg);
+  if (typeof showToast === 'function') showToast('🔐 ' + msg, failed ? 'error' : 'success');
+  return { done, skipped, failed };
 }
 
 function login() {
@@ -2522,22 +2720,26 @@ function login() {
       // Try cache as fallback
       const users = getData('users') || {};
       const u = users[email];
-      if (!u || u.pass !== pass) {
-        err.textContent = 'Invalid email or password.'; err.style.display = 'block'; return;
-      }
-      const isAdmin = (email === ADMIN_EMAIL) || u.isAdmin === true;
-      currentUser = { name: u.name, email, isAdmin };
-      setSession(currentUser);
-      postLogin();
+      verifyPass(u, email.replace(/\./g,'_dot_'), pass).then(ok => {
+        if (!ok) {
+          err.textContent = 'Invalid email or password.'; err.style.display = 'block'; return;
+        }
+        const isAdmin = (email === ADMIN_EMAIL) || u.isAdmin === true;
+        currentUser = { name: u.name, email, isAdmin };
+        setSession(currentUser);
+        postLogin();
+      });
       return;
     }
-    if (user.pass !== pass) {
-      err.textContent = 'Invalid email or password.'; err.style.display = 'block'; return;
-    }
-    const isAdmin = (email === ADMIN_EMAIL) || user.isAdmin === true;
-    currentUser = { name: user.name, email, isAdmin };
-    setSession(currentUser);
-    postLogin();
+    verifyPass(user, email.replace(/\./g,'_dot_'), pass).then(ok => {
+      if (!ok) {
+        err.textContent = 'Invalid email or password.'; err.style.display = 'block'; return;
+      }
+      const isAdmin = (email === ADMIN_EMAIL) || user.isAdmin === true;
+      currentUser = { name: user.name, email, isAdmin };
+      setSession(currentUser);
+      postLogin();
+    });
   });
 }
 
@@ -3516,8 +3718,8 @@ function computeStageWinnersIfNeeded() {
         const pts = calcPoints(pred, result, mid);
         if (pts !== null) total += pts;
       });
-      return { name: u.name, email: u.email, total };
-    }).sort((a,b) => b.total - a.total);
+      return { name: u.name, email: u.email, total, disqualified: u.disqualified === true };
+    }).filter(u => !u.disqualified).sort((a,b) => b.total - a.total);
     if (ranked.length) {
       stageWinners[stage.key] = {
         name: ranked[0].name,
@@ -3556,43 +3758,45 @@ function renderRanking() {
       if (pts >= 9) exact++;
       else if (pts >= 3) outcome++;
     });
-    return { ...u, total, exact, outcome, filled };
-  }).sort((a,b) => b.total - a.total || b.filled - a.filled);
+    return { ...u, total, exact, outcome, filled, disqualified: u.disqualified === true };
+  }).sort((a,b) => {
+    // anyone who has forfeited sorts to the bottom regardless of points
+    if (a.disqualified !== b.disqualified) return a.disqualified ? 1 : -1;
+    return b.total - a.total || b.filled - a.filled;
+  });
 
   if (!ranked.length) {
     document.getElementById('rankingContainer').innerHTML = '<div style="text-align:center;padding:60px;color:var(--muted)">No participants yet.</div>';
     return;
   }
 
-  let html = `<table class="ranking-table"><thead><tr>
-    <th style="width:50px">#</th>
-    <th>Participant</th>
-    <th style="text-align:right">Picks</th>
-    <th style="text-align:right">Points</th>
-  </tr></thead><tbody>`;
+  // Top 3 are shown on the podium, so the table starts at 4th.
+  // While the forfeit ceremony is playing the podium is still showing the
+  // pre-forfeit standings, so the table has to match — otherwise whoever was
+  // 4th before the forfeit is on neither the podium nor the table, and
+  // disappears from the page entirely until the podium rebuilds.
+  const dqUser = ranked.find(u => u.disqualified);
+  const willPlayCeremony = !!dqUser && ranked.length >= 4 && !_prefersReducedMotion();
+  const preForfeit = ranked.slice().sort((a,b) => b.total - a.total || b.filled - a.filled);
+  const openingOrder = willPlayCeremony ? preForfeit : ranked;
 
-  ranked.forEach((u, i) => {
-    const pos = i + 1;
-    const posClass = pos === 1 ? 'gold' : pos === 2 ? 'silver' : pos === 3 ? 'bronze' : '';
-    const medal = pos === 1 ? '🥇' : pos === 2 ? '🥈' : pos === 3 ? '🥉' : '';
-    const isMe = u.email === currentUser.email;
-    const meBg = isMe ? 'background:rgba(26,158,107,0.07);' : '';
-    html += `<tr style="${meBg}">
-      <td><span class="rank-pos ${posClass}">${medal || pos}</span></td>
-      <td>
-        <div class="rank-name">${u.name} ${isMe ? '<span style="font-size:11px;color:var(--green);opacity:0.7">(you)</span>' : ''}</div>
-        <div class="rank-email">${u.email}</div>
-        <div style="margin-top:4px">
-          ${u.exact ? `<span class="pts-pill">🎯 ${u.exact} exact</span>` : ''}
-          ${u.outcome ? `<span class="pts-pill">✅ ${u.outcome} outcomes</span>` : ''}
-        </div>
-      </td>
-      <td style="text-align:right"><span class="rank-breakdown">${u.filled}</span></td>
-      <td style="text-align:right"><span class="rank-pts">${u.total}</span></td>
-    </tr>`;
-  });
+  let html = renderPodiumShell(ranked.slice(0, 3), ranked);
 
-  html += '</tbody></table>';
+  if (ranked.length > 3) {
+    html += `<div class="rest-head">
+      <span class="rest-label">Rest of the field</span>
+      <span class="rest-range">4th – ${ranked.length}${ordSuffix(ranked.length)}</span>
+    </div>`;
+    html += `<table class="ranking-table"><thead><tr>
+      <th style="width:50px">#</th>
+      <th>Participant</th>
+      <th style="text-align:right">Picks</th>
+      <th style="text-align:right">Points</th>
+    </tr></thead><tbody id="rankingTableBody">`;
+    html += rankingRowsHtml(openingOrder.slice(3));
+  }
+
+  if (ranked.length > 3) html += '</tbody></table>';
 
   // Stage winners panel (stageWinners already loaded above)
   const stageKeys = [
@@ -3626,6 +3830,301 @@ function renderRanking() {
   }
 
   document.getElementById('rankingContainer').innerHTML = html + winnersHtml;
+  runPodiumCeremony(ranked);
+}
+
+// ============================================================
+// PODIUM + FORFEIT CEREMONY
+// Driven entirely by the `disqualified` flag on a user record, so it
+// generalises — it is not hardcoded to any particular participant.
+// ============================================================
+function ordSuffix(n) {
+  const s = ['th','st','nd','rd'], v = n % 100;
+  return s[(v - 20) % 10] || s[v] || s[0];
+}
+
+// Rows for the "rest of the field" table. `list` starts at 4th place.
+function rankingRowsHtml(list) {
+  let out = '';
+  list.forEach((u, i) => {
+    const pos = i + 4;
+    const isMe = currentUser && u.email === currentUser.email;
+    const meBg = isMe ? 'background:rgba(26,158,107,0.07);' : '';
+    out += `<tr style="${meBg}" class="${u.disqualified ? 'rrow-dq' : ''}">
+      <td><span class="rank-pos">${pos}</span></td>
+      <td>
+        <div class="rank-name">${u.name} ${isMe ? '<span style="font-size:11px;color:var(--green);opacity:0.7">(you)</span>' : ''}${u.disqualified ? '<span class="dq-flag">🤖 AI assisted</span>' : ''}</div>
+        <div class="rank-email">${u.email}</div>
+        <div style="margin-top:4px">
+          ${u.exact ? `<span class="pts-pill">🎯 ${u.exact} exact</span>` : ''}
+          ${u.outcome ? `<span class="pts-pill">✅ ${u.outcome} outcomes</span>` : ''}
+        </div>
+      </td>
+      <td style="text-align:right"><span class="rank-breakdown">${u.filled}</span></td>
+      <td style="text-align:right"><span class="rank-pts">${u.disqualified ? 'VOID' : u.total}</span></td>
+    </tr>`;
+  });
+  return out;
+}
+function podInitials(name) {
+  return String(name || '').replace(/[^\w\s]/g,'').trim().split(/\s+/).slice(0,2)
+    .map(w => w[0] || '').join('').toUpperCase();
+}
+const POD_MED  = ['🥇','🥈','🥉'];
+const POD_TONE = [{b:'#FFF7DB',t:'#8A6D00'},{b:'#F2F4F6',t:'#5C6870'},{b:'#FBF0E6',t:'#8A5424'}];
+const POD_H    = [176,128,104];
+const POD_SLOTS = [1,0,2];   // render order: 2nd (left), 1st (centre), 3rd (right)
+
+let _podTimers = [];
+
+
+function podFigureHtml(u, rank) {
+  return `<div class="pod-fig" data-r="${rank}">
+    <div class="pod-av" style="background:${POD_TONE[rank].b};color:${POD_TONE[rank].t}">${podInitials(u.name)}
+      <span class="pod-medal">${POD_MED[rank]}</span>
+      <svg class="pod-ring" viewBox="0 0 74 74"><circle cx="37" cy="37" r="33" stroke="#1A9E6B"/></svg>
+      <span class="pod-tick">✓</span>
+    </div>
+    <div class="pod-nm">${u.name}</div>
+    <div class="pod-pts" data-p="${u.total}">${u.total}</div>
+    <div class="pod-st">${u.exact} exact · ${u.outcome} outcomes</div>
+  </div>`;
+}
+
+function renderPodiumShell(podiumUsers, ranked) {
+  if (podiumUsers.length < 3) return '';
+  const dq = ranked.find(u => u.disqualified);
+  const dqPos = dq ? ranked.indexOf(dq) + 1 : 0;
+  return `<div class="podium-stage" id="podiumStage">
+    <div class="podium-cap" id="podiumCap">Podium</div>
+    <div class="podium-readout" id="podiumReadout"></div>
+    <div class="podium" id="podiumRow"></div>
+    <div class="pod-glow" id="podiumGlow"></div>
+    <div class="pod-lights" id="podiumLights"><div class="pod-redwash" id="podiumRedwash"></div></div>
+    ${dq ? `<div class="pod-strip" id="podiumStrip">
+      <span class="ps-pos">${dqPos}<span style="font-size:15px">${ordSuffix(dqPos)}</span></span>
+      <span class="ps-name">${dq.name}</span>
+      <span class="ps-void">Void · ${dq.total} pts</span>
+      <span class="ps-why">${dq.dqReason || 'Used AI for predictions · forfeited 1st place'}</span>
+    </div>` : ''}
+  </div>`;
+}
+
+function buildPodium(users, animate) {
+  const row = document.getElementById('podiumRow');
+  if (!row) return;
+  row.innerHTML = '';
+  POD_SLOTS.forEach(rank => {
+    const slot = document.createElement('div');
+    slot.className = 'pod-slot';
+    slot.innerHTML = podFigureHtml(users[rank], rank) +
+      `<div class="pod-ped" style="height:${animate ? 0 : POD_H[rank]}px">${rank + 1}</div>`;
+    row.appendChild(slot);
+  });
+  if (!animate) return;
+  const peds = row.querySelectorAll('.pod-ped'), figs = row.querySelectorAll('.pod-fig');
+  figs.forEach(f => { f.style.opacity = '0'; f.style.transform = 'translateY(20px)'; });
+  POD_SLOTS.forEach((rank, ix) => {
+    podAt(() => { peds[ix].style.height = POD_H[rank] + 'px'; }, 140 + ix * 180);
+    podAt(() => { figs[ix].style.opacity = '1'; figs[ix].style.transform = 'none'; }, 600 + ix * 180);
+  });
+}
+
+function podAt(fn, ms) { _podTimers.push(setTimeout(fn, ms)); }
+function podClear() { _podTimers.forEach(t => { clearTimeout(t); clearInterval(t); }); _podTimers = []; }
+function podFig(rank) { const r = document.getElementById('podiumRow'); return r && r.querySelector(`.pod-fig[data-r="${rank}"]`); }
+function podCap(text, alert) {
+  const c = document.getElementById('podiumCap'); if (!c) return;
+  c.style.opacity = '0';
+  podAt(() => { c.textContent = text; c.classList.toggle('alert', !!alert); c.style.opacity = '1'; }, 170);
+}
+function podSay(text) {
+  const r = document.getElementById('podiumReadout'); if (!r) return;
+  r.style.opacity = '1'; r.textContent = text;
+}
+function podSpotlight(rank) {
+  const f = podFig(rank), stage = document.getElementById('podiumStage'), lights = document.getElementById('podiumLights');
+  if (!f || !stage || !lights) return;
+  const fr = f.getBoundingClientRect(), sr = stage.getBoundingClientRect();
+  lights.style.transform = `translate(${fr.left + fr.width/2 - (sr.left + sr.width/2)}px,${fr.top + 31 - (sr.top + sr.height/2)}px)`;
+}
+function podRing(rank, pct, color) {
+  const f = podFig(rank); if (!f) return;
+  f.querySelector('.pod-ring').classList.add('active');
+  const c = f.querySelector('.pod-ring circle');
+  if (color) c.style.stroke = color;
+  c.style.strokeDashoffset = 210 * (1 - pct);
+}
+function podScramble(rank, ms) {
+  const f = podFig(rank); if (!f) return;
+  const el = f.querySelector('.pod-pts'), real = el.getAttribute('data-p');
+  const iv = setInterval(() => { el.textContent = Math.floor(100 + Math.random() * 900); }, 70);
+  _podTimers.push(iv);
+  podAt(() => { clearInterval(iv); el.textContent = real; }, ms);
+}
+function podConfetti() {
+  const stage = document.getElementById('podiumStage'), row = document.getElementById('podiumRow');
+  if (!stage || !row) return;
+  const w = row.getBoundingClientRect().width;
+  const cs = ['#FFD700','#1A9E6B','#2F7FBF','#D94F4F','#fff','#C07A3A'];
+  for (let k = 0; k < 110; k++) {
+    const s = document.createElement('span');
+    s.className = 'pod-cf';
+    s.style.background = cs[Math.floor(Math.random() * cs.length)];
+    s.style.left = (Math.random() * w) + 'px';
+    s.style.top = '-16px';
+    const dur = 2.6 + Math.random() * 1.4;
+    s.style.transition = `transform ${dur}s cubic-bezier(.2,.5,.35,1), opacity ${dur}s ease-in`;
+    stage.appendChild(s);
+    podAt(() => {
+      s.style.transform = `translate(${Math.random()*170-85}px,${330+Math.random()*150}px) rotate(${Math.random()*820-410}deg)`;
+      s.style.opacity = '0';
+    }, 40);
+    podAt(() => s.remove(), 4300);
+  }
+}
+
+function runPodiumCeremony(ranked) {
+  podClear();
+  if (ranked.length < 4) return;
+  const stage = document.getElementById('podiumStage');
+  if (!stage) return;
+
+  const dq = ranked.find(u => u.disqualified);
+
+  // Plays on every visit to the Ranking tab. Only skipped when there is no
+  // forfeit to show, or the visitor has asked for reduced motion.
+  if (!dq || _prefersReducedMotion()) {
+    buildPodium(ranked.slice(0, 3), true);
+    if (dq) podAt(() => { const s = document.getElementById('podiumStrip'); if (s) s.classList.add('on'); }, 900);
+    return;
+  }
+
+  // "Before" podium: what the standings would have been without the forfeit.
+  const preForfeit = ranked.slice().sort((a,b) => b.total - a.total || b.filled - a.filled);
+  const before = preForfeit.slice(0, 3);
+  const after  = ranked.slice(0, 3);
+  const dqRank = before.findIndex(u => u.email === dq.email);
+
+  buildPodium(before, true);
+
+  // If the forfeiter wasn't in the top 3 anyway, skip the theatrics —
+  // but still settle the table into the corrected order.
+  if (dqRank < 0) {
+    podAt(() => {
+      buildPodium(after, true);
+      const tbody = document.getElementById('rankingTableBody');
+      if (tbody) tbody.innerHTML = rankingRowsHtml(ranked.slice(3));
+      const s = document.getElementById('podiumStrip');
+      if (s) s.classList.add('on');
+    }, 1400);
+    return;
+  }
+
+  const lights = document.getElementById('podiumLights');
+  const redwash = document.getElementById('podiumRedwash');
+  const glow = document.getElementById('podiumGlow');
+  const cap = document.getElementById('podiumCap');
+  const readout = document.getElementById('podiumReadout');
+  const others = [0,1,2].filter(r => r !== dqRank);
+
+  // 2.0s — house lights down
+  podAt(() => {
+    podCap('Running integrity check');
+    cap.classList.add('ondark'); readout.classList.add('ondark');
+    stage.classList.add('dark');
+    podSpotlight(others[1]);
+    podAt(() => { lights.style.opacity = '1'; }, 60);
+  }, 2000);
+
+  // verify the two clean finishers, then arrive at the forfeiter
+  podAt(() => { podSay(`Checking ${before[others[1]].name} — ${before[others[1]].filled} picks`); podRing(others[1], 1); }, 2700);
+  podAt(() => { const f = podFig(others[1]); if (f) f.querySelector('.pod-tick').classList.add('on'); podSay(`${before[others[1]].name} — clear`); }, 3500);
+  podAt(() => { podSpotlight(others[0]); podSay(`Checking ${before[others[0]].name} — ${before[others[0]].filled} picks`); }, 3800);
+  podAt(() => { podRing(others[0], 1); }, 4000);
+  podAt(() => { const f = podFig(others[0]); if (f) f.querySelector('.pod-tick').classList.add('on'); podSay(`${before[others[0]].name} — clear`); }, 4800);
+
+  podAt(() => { podSpotlight(dqRank); podSay(`Checking ${dq.name} — ${dq.filled} picks`); }, 5100);
+  podAt(() => {
+    const f = podFig(dqRank); if (!f) return;
+    f.querySelector('.pod-ring circle').style.transitionDuration = '1s';
+    podRing(dqRank, .68);
+  }, 5400);
+
+  // 6.2s — it stalls
+  podAt(() => { podScramble(dqRank, 900); podSay('Recomputing…'); }, 6200);
+
+  // 7.1s — flagged
+  podAt(() => {
+    redwash.style.opacity = '1';
+    podRing(dqRank, .68, '#FF6B6B');
+    podCap('AI assistance detected', true);
+    podSay(`${dq.exact} exact scores from ${dq.filled} picks — outside expected range`);
+  }, 7100);
+
+  // 8.2s — the trophy lifts off
+  let trophy = null;
+  podAt(() => {
+    readout.style.opacity = '0';
+    const f = podFig(dqRank); if (!f) return;
+    const fr = f.getBoundingClientRect(), sr = stage.getBoundingClientRect();
+    trophy = document.createElement('div');
+    trophy.className = 'pod-fly';
+    trophy.textContent = '🏆';
+    trophy.style.cssText += `;font-size:46px;left:${fr.left - sr.left + fr.width/2 - 23}px;top:${fr.top - sr.top - 6}px;opacity:0;transition:transform 1s cubic-bezier(.3,.9,.4,1),opacity .45s`;
+    stage.appendChild(trophy);
+    podAt(() => { trophy.style.opacity = '1'; }, 30);
+    podAt(() => { trophy.style.transform = 'translateY(-78px)'; }, 230);
+  }, 8200);
+
+  // 9.0s — they fall out from under it
+  podAt(() => {
+    const f = podFig(dqRank); if (!f) return;
+    const fr = f.getBoundingClientRect(), sr = stage.getBoundingClientRect();
+    const c = f.cloneNode(true);
+    c.className = 'pod-fly pod-fig';
+    c.style.cssText += `;left:${fr.left - sr.left}px;top:${fr.top - sr.top}px;width:${fr.width}px;margin:0;transition:transform 1.5s cubic-bezier(.5,0,.7,.35),opacity 1.3s .4s`;
+    stage.appendChild(c);
+    f.style.opacity = '0';
+    podAt(() => { c.style.transform = 'translateY(430px) scale(.45) rotate(-10deg)'; c.style.opacity = '0'; }, 40);
+    podAt(() => c.remove(), 1600);
+  }, 9000);
+
+  // 9.9s — lights up, podium rebuilds with the corrected standings
+  podAt(() => {
+    lights.style.opacity = '0'; redwash.style.opacity = '0';
+    stage.classList.remove('dark');
+    cap.classList.remove('ondark', 'alert'); readout.classList.remove('ondark');
+    readout.style.opacity = '0';
+    podCap('Recalculating podium');
+    buildPodium(after, true);
+    // Table has been showing the pre-forfeit order so nobody vanished mid-run.
+    // Swap it to the corrected standings now that the podium is rebuilding.
+    const tbody = document.getElementById('rankingTableBody');
+    if (tbody) tbody.innerHTML = rankingRowsHtml(ranked.slice(3));
+  }, 9900);
+
+  // 11.0s — the trophy crosses and descends onto the new champion
+  podAt(() => {
+    if (!trophy) return;
+    const f = podFig(0); if (!f) return;
+    const fr = f.getBoundingClientRect(), sr = stage.getBoundingClientRect(), tr = trophy.getBoundingClientRect();
+    const dx = (fr.left + fr.width/2 - 23) - tr.left;
+    const dy = (fr.top - sr.top - 56) - (tr.top - sr.top);
+    trophy.style.transitionDuration = '1.15s';
+    trophy.style.transform = `translate(${dx}px,${dy - 78}px)`;
+    podAt(() => { trophy.style.transform = `translate(${dx}px,${dy}px)`; }, 620);
+    podAt(() => { glow.style.opacity = '1'; podConfetti(); podCap(`${after[0].name} — champion`); }, 900);
+    podAt(() => { trophy.style.opacity = '0'; }, 2200);
+    podAt(() => trophy.remove(), 2700);
+  }, 11000);
+
+  // 12.1s — the result docks
+  podAt(() => { const s = document.getElementById('podiumStrip'); if (s) s.classList.add('on'); }, 12100);
+}
+
+function _prefersReducedMotion() {
+  return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
 // ============================================================
@@ -3657,7 +4156,7 @@ function renderUsersPanel() {
     });
     const joinDate = u.joined ? new Date(u.joined).toLocaleDateString('en-US', {day:'2-digit',month:'short',year:'numeric'}) : '—';
     rows += `<tr>
-      <td><strong>${u.name}</strong>${u.isAdmin ? ' <span class="user-badge-admin">ADMIN</span>' : ''}</td>
+      <td><strong>${u.name}</strong>${u.isAdmin ? ' <span class="user-badge-admin">ADMIN</span>' : ''}${u.disqualified ? ' <span class="dq-flag">🤖 forfeited</span>' : ''}</td>
       <td style="color:var(--muted);font-size:12px">${u.email}</td>
       <td style="text-align:center">${predCount}</td>
       <td style="text-align:center;font-weight:700;color:var(--green)">${pts}</td>
@@ -3669,6 +4168,7 @@ function renderUsersPanel() {
           <button class="reset-pass-btn" onclick="adminResetPassword('${u.email}')">🔑 Reset</button>
           <button class="reset-pass-btn danger" onclick="deleteUser('${u.email}')" style="margin-left:4px">🗑️</button>
           ` : '<span style="font-size:11px;color:var(--muted);font-style:italic">Admin account</span>'}
+          <button class="reset-pass-btn" onclick="toggleForfeit('${u.email}')" style="margin-left:4px" title="Forfeit sorts this participant last and voids their points. Their points stay on record.">${u.disqualified ? '↩️ Undo forfeit' : '🤖 Forfeit'}</button>
         </div>
       </td>
     </tr>`;
@@ -3706,10 +4206,15 @@ function adminResetPassword(email) {
   }
   // Write directly to Firebase using the safe email key
   const emailKey = email.replace(/\./g, '_dot_');
-  db.ref('wc26/users/' + emailKey + '/pass').set(newPass).then(() => {
+  db.ref('wc26/users/' + emailKey).once('value').then(snap => {
+    const ud = snap.val() || {};
+    return hashPass(ud, newPass).then(passHash =>
+      db.ref('wc26/users/' + emailKey).update({ passHash, pass: null })
+    );
+  }).then(() => {
     // Update cache too
     const users = _cache['users'] || {};
-    if (users[email]) users[email].pass = newPass;
+    if (users[email]) { delete users[email].pass; }
     _cache['users'] = users;
     input.value = '';
     showToast('✅ Password reset successfully', 'success');
@@ -3762,7 +4267,8 @@ function saveProfile() {
   db.ref('wc26/users/' + oldEmailKey).once('value', snap => {
     if (btn) { btn.disabled = false; btn.textContent = '💾 Save Changes'; }
     const userData = snap.val();
-    if (!userData || userData.pass !== currentPass) {
+    verifyPass(userData, oldEmailKey, currentPass).then(ok => {
+    if (!ok) {
       err.textContent = 'Current password is incorrect.'; err.style.display = 'block'; return;
     }
 
@@ -3771,11 +4277,18 @@ function saveProfile() {
 
     // Check if new email already taken (only if changing)
     const proceed = () => {
+      // verifyPass has already upgraded a legacy record, so userData.passHash
+      // is populated by this point; only re-hash when a new password was typed.
+      const nextHash = newPass
+        ? hashPass(userData, newPass)
+        : Promise.resolve(userData.passHash);
+      nextHash.then(passHash => {
       const updatedData = {
         ...userData,
         name: newName,
         email: newEmail,
-        pass: newPass || userData.pass,
+        passHash,
+        pass: null,
         isAdmin: newEmail === ADMIN_EMAIL || userData.isAdmin
       };
 
@@ -3814,6 +4327,7 @@ function saveProfile() {
       // Clear password fields
       document.getElementById('profileCurrentPass').value = '';
       document.getElementById('profileNewPass').value = '';
+      }); // nextHash.then
     };
 
     if (emailChanged) {
@@ -3826,6 +4340,7 @@ function saveProfile() {
     } else {
       proceed();
     }
+    }); // verifyPass.then
   });
 }
 
