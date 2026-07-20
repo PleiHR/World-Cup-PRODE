@@ -458,6 +458,7 @@ body {
 .pod-strip .ps-void { font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 1px;
   padding: 3px 9px; border-radius: 5px; background: rgba(217,79,79,0.22); color: #FF8B8B; border: 1px solid rgba(217,79,79,0.45); }
 .pod-strip .ps-why { font-size: 11.5px; color: rgba(255,255,255,0.6); margin-left: auto; text-align: right; }
+.pod-strip .ps-why-brief { display: none; }
 .pod-strip.on { transform: translateY(0); }
 .rest-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
 .rest-label { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 1.6px; text-transform: uppercase; }
@@ -482,8 +483,15 @@ body {
   .pod-st { font-size: 9px; }
   .pod-ped { font-size: 32px; padding-top: 8px; }
   .pod-lights { background: radial-gradient(circle at 50% 50%, transparent 0, transparent 68px, rgba(6,38,25,0.86) 180px); }
-  .pod-strip { flex-wrap: wrap; gap: 8px; padding: 9px 14px; }
-  .pod-strip .ps-why { margin-left: 0; flex-basis: 100%; text-align: left; font-size: 10.5px; }
+  /* Single row, kept short so the 2nd and 3rd pedestals stay visible behind it */
+  .pod-strip { flex-wrap: nowrap; gap: 7px; padding: 6px 12px; }
+  .pod-strip .ps-pos { font-size: 19px; }
+  .pod-strip .ps-pos span { font-size: 11px !important; }
+  .pod-strip .ps-name { font-size: 11.5px; white-space: nowrap; }
+  .pod-strip .ps-void { font-size: 8.5px; padding: 2px 6px; letter-spacing: .5px; white-space: nowrap; }
+  .pod-strip .ps-why-full { display: none; }
+  .pod-strip .ps-why-brief { display: block; font-size: 9px; margin-left: auto;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 }
 
 /* RANKING */
@@ -3924,7 +3932,8 @@ function renderPodiumShell(podiumUsers, ranked) {
       <span class="ps-pos">${dqPos}<span style="font-size:15px">${ordSuffix(dqPos)}</span></span>
       <span class="ps-name">${dq.name}</span>
       <span class="ps-void">Void · ${dq.total} pts</span>
-      <span class="ps-why">${dq.dqReason || 'Used AI for predictions · forfeited 1st place'}</span>
+      <span class="ps-why ps-why-full">${dq.dqReason || 'Used AI for predictions · forfeited 1st place'}</span>
+      <span class="ps-why ps-why-brief">AI assisted · forfeited</span>
     </div>` : ''}
   </div>`;
 }
