@@ -403,7 +403,7 @@ body {
 
 /* ===== PODIUM CEREMONY ===== */
 .podium-stage { background: var(--card); border: 1px solid var(--border); border-radius: 16px;
-  padding: 22px 20px 0; margin-bottom: 24px; position: relative; overflow: hidden; transition: background .8s; }
+  padding: 22px 20px 0; margin-bottom: 16px; position: relative; overflow: hidden; transition: background .8s; }
 .podium-stage.dark { background: #0A2E1E; }
 .podium-cap { font-family: 'Oswald', sans-serif; font-size: 11.5px; letter-spacing: 2px; text-transform: uppercase;
   color: var(--muted); text-align: center; height: 15px; position: relative; z-index: 50; transition: opacity .4s, color .4s; }
@@ -450,16 +450,18 @@ body {
   opacity: 0; transition: opacity .7s; pointer-events: none; z-index: 20; }
 .pod-fly { position: absolute; z-index: 60; pointer-events: none; }
 .pod-cf { position: absolute; width: 8px; height: 14px; border-radius: 1px; z-index: 55; pointer-events: none; }
-.pod-strip { position: absolute; left: 0; right: 0; bottom: 0; background: #0A2E1E; color: #fff; padding: 11px 20px;
-  display: flex; align-items: center; gap: 14px; transform: translateY(105%);
-  transition: transform .85s cubic-bezier(.3,1.1,.4,1); z-index: 45; }
+/* Sits below the podium card, not over it. Collapsed until the ceremony ends. */
+.pod-strip { background: #0A2E1E; color: #fff; padding: 0 20px; border-radius: 12px;
+  display: flex; align-items: center; gap: 14px;
+  max-height: 0; opacity: 0; overflow: hidden; margin-bottom: 0;
+  transition: max-height .8s cubic-bezier(.3,1,.4,1), opacity .55s, padding .8s, margin-bottom .8s; }
 .pod-strip .ps-pos { font-family: 'Bebas Neue', sans-serif; font-size: 27px; color: #FF8B8B; line-height: 1; }
 .pod-strip .ps-name { font-weight: 600; font-size: 14px; }
 .pod-strip .ps-void { font-family: 'Oswald', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 1px;
   padding: 3px 9px; border-radius: 5px; background: rgba(217,79,79,0.22); color: #FF8B8B; border: 1px solid rgba(217,79,79,0.45); }
 .pod-strip .ps-why { font-size: 11.5px; color: rgba(255,255,255,0.6); margin-left: auto; text-align: right; }
 .pod-strip .ps-why-brief { display: none; }
-.pod-strip.on { transform: translateY(0); }
+.pod-strip.on { max-height: 90px; opacity: 1; padding: 11px 20px; margin-bottom: 24px; }
 .rest-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; }
 .rest-label { font-family: 'Oswald', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 1.6px; text-transform: uppercase; }
 .rest-range { font-size: 11.5px; color: var(--muted); letter-spacing: .5px; }
@@ -483,8 +485,9 @@ body {
   .pod-st { font-size: 9px; }
   .pod-ped { font-size: 32px; padding-top: 8px; }
   .pod-lights { background: radial-gradient(circle at 50% 50%, transparent 0, transparent 68px, rgba(6,38,25,0.86) 180px); }
-  /* Single row, kept short so the 2nd and 3rd pedestals stay visible behind it */
-  .pod-strip { flex-wrap: nowrap; gap: 7px; padding: 6px 12px; }
+  /* Single row so it stays a thin bar under the podium */
+  .pod-strip { flex-wrap: nowrap; gap: 7px; padding: 0 12px; }
+  .pod-strip.on { padding: 7px 12px; margin-bottom: 18px; }
   .pod-strip .ps-pos { font-size: 19px; }
   .pod-strip .ps-pos span { font-size: 11px !important; }
   .pod-strip .ps-name { font-size: 11.5px; white-space: nowrap; }
@@ -2777,7 +2780,8 @@ function postLogin() {
   // Show bottom nav on mobile
   const bnav = document.getElementById('bottomNav');
   if (bnav) bnav.style.display = '';
-  showPage('matches');
+  // Tournament is over — land on the standings rather than the fixture list.
+  showPage('ranking');
 }
 
 // ============================================================
@@ -3928,14 +3932,14 @@ function renderPodiumShell(podiumUsers, ranked) {
     <div class="podium" id="podiumRow"></div>
     <div class="pod-glow" id="podiumGlow"></div>
     <div class="pod-lights" id="podiumLights"><div class="pod-redwash" id="podiumRedwash"></div></div>
-    ${dq ? `<div class="pod-strip" id="podiumStrip">
-      <span class="ps-pos">${dqPos}<span style="font-size:15px">${ordSuffix(dqPos)}</span></span>
-      <span class="ps-name">${dq.name}</span>
-      <span class="ps-void">Void · ${dq.total} pts</span>
-      <span class="ps-why ps-why-full">${dq.dqReason || 'Used AI for predictions · forfeited 1st place'}</span>
-      <span class="ps-why ps-why-brief">AI assisted · forfeited</span>
-    </div>` : ''}
-  </div>`;
+  </div>
+  ${dq ? `<div class="pod-strip" id="podiumStrip">
+    <span class="ps-pos">${dqPos}<span style="font-size:15px">${ordSuffix(dqPos)}</span></span>
+    <span class="ps-name">${dq.name}</span>
+    <span class="ps-void">Void · ${dq.total} pts</span>
+    <span class="ps-why ps-why-full">${dq.dqReason || 'Used AI for predictions · forfeited 1st place'}</span>
+    <span class="ps-why ps-why-brief">AI assisted · forfeited</span>
+  </div>` : ''}`;
 }
 
 function buildPodium(users, animate) {
