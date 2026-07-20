@@ -2,13 +2,10 @@
   "rules": {
     "wc26": {
       "users": {
-        ".read": false,
-        ".write": false,
+        ".read": true,
+        ".write": true,
         "$emailKey": {
-          ".read": true,
-          ".write": true,
           "pass": {
-            ".read": false,
             ".validate": false
           }
         }
