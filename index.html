@@ -420,7 +420,10 @@ body {
   box-shadow: 0 3px 10px rgba(13,61,40,0.18); }
 .pod-logo { width: 100%; height: 100%; display: block; }
 .pod-av .pod-medal { position: absolute; bottom: -8px; right: -10px; font-size: 22px; z-index: 3; }
-.pod-ring { position: absolute; left: -9px; top: -9px; width: 74px; height: 74px; transform: rotate(-90deg);
+/* Centred on the avatar regardless of avatar size — do not use fixed offsets,
+   they drift the moment .pod-av changes dimensions. */
+.pod-ring { position: absolute; left: 50%; top: 50%; width: 74px; height: 74px;
+  transform: translate(-50%, -50%) rotate(-90deg);
   pointer-events: none; opacity: 0; transition: opacity .3s; }
 .pod-ring.active { opacity: 1; }
 .pod-ring circle { fill: none; stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 210; stroke-dashoffset: 210;
@@ -479,7 +482,7 @@ body {
   .pod-ped { padding-top: 6px; }
   .pod-av { width: 46px; height: 46px; font-size: 15px; border-width: 2px; }
   .pod-av .pod-medal { font-size: 17px; bottom: -6px; right: -7px; }
-  .pod-ring { left: -7px; top: -7px; width: 58px; height: 58px; }
+  .pod-ring { width: 58px; height: 58px; }
   .pod-nm { font-size: 11px; max-width: 100%; }
   .pod-pts { font-size: 22px; }
   .pod-st { font-size: 9px; }
