@@ -412,13 +412,13 @@ body {
 .podium-readout { height: 14px; margin: 5px 0 16px; text-align: center; font-size: 10.5px; letter-spacing: .4px;
   color: var(--muted); font-variant-numeric: tabular-nums; opacity: 0; position: relative; z-index: 50; transition: opacity .4s, color .4s; }
 .podium-readout.ondark { color: rgba(255,255,255,0.55); }
-.podium { display: flex; align-items: flex-end; justify-content: center; gap: 12px; height: 300px; position: relative; z-index: 10; }
+.podium { display: flex; align-items: flex-end; justify-content: center; gap: 12px; height: 340px; position: relative; z-index: 10; }
 .pod-slot { width: 186px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
 .pod-fig { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 12px;
   transition: opacity .7s ease, transform .8s cubic-bezier(.25,1.2,.5,1); }
-.pod-av { width: 62px; height: 62px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 19px; border: 3px solid #fff; position: relative;
-  box-shadow: 0 3px 10px rgba(13,61,40,0.15); }
+.pod-av { width: 62px; height: 62px; border-radius: 50%; position: relative;
+  box-shadow: 0 3px 10px rgba(13,61,40,0.18); }
+.pod-logo { width: 100%; height: 100%; display: block; }
 .pod-av .pod-medal { position: absolute; bottom: -8px; right: -10px; font-size: 22px; z-index: 3; }
 .pod-ring { position: absolute; left: -9px; top: -9px; width: 74px; height: 74px; transform: rotate(-90deg);
   pointer-events: none; opacity: 0; transition: opacity .3s; }
@@ -438,7 +438,8 @@ body {
 .podium-stage.dark .pod-pts { color: #5FD9A4; }
 .pod-ped { width: 100%; border-radius: 10px 10px 0 0; background: linear-gradient(180deg, var(--green), var(--green-dark));
   display: flex; align-items: flex-start; justify-content: center; padding-top: 12px; font-family: 'Bebas Neue', sans-serif;
-  font-size: 46px; color: rgba(255,255,255,0.9); line-height: 1; transition: height 1.1s cubic-bezier(.3,1.05,.4,1); }
+  font-size: 46px; color: rgba(255,255,255,0.9); line-height: 1; transition: height 1.1s cubic-bezier(.3,1.05,.4,1);
+  flex-shrink: 0; }
 .pod-lights { position: absolute; left: 50%; top: 50%; width: 2800px; height: 1000px; margin: -500px 0 0 -1400px;
   background: radial-gradient(circle at 50% 50%, transparent 0, transparent 96px, rgba(6,38,25,0.86) 250px);
   opacity: 0; pointer-events: none; z-index: 30; transition: opacity .8s ease, transform 1s cubic-bezier(.45,.05,.3,1); }
@@ -469,8 +470,10 @@ body {
   text-transform: uppercase; margin-left: 8px; }
 
 @media (max-width: 640px) {
-  .podium { height: 232px; gap: 6px; }
+  .podium { height: 250px; gap: 6px; }
   .pod-slot { width: 33.3%; }
+  .pod-fig { gap: 4px; margin-bottom: 8px; }
+  .pod-ped { padding-top: 6px; }
   .pod-av { width: 46px; height: 46px; font-size: 15px; border-width: 2px; }
   .pod-av .pod-medal { font-size: 17px; bottom: -6px; right: -7px; }
   .pod-ring { left: -7px; top: -7px; width: 58px; height: 58px; }
@@ -3866,13 +3869,29 @@ function rankingRowsHtml(list) {
   });
   return out;
 }
-function podInitials(name) {
-  return String(name || '').replace(/[^\w\s]/g,'').trim().split(/\s+/).slice(0,2)
-    .map(w => w[0] || '').join('').toUpperCase();
-}
 const POD_MED  = ['🥇','🥈','🥉'];
-const POD_TONE = [{b:'#FFF7DB',t:'#8A6D00'},{b:'#F2F4F6',t:'#5C6870'},{b:'#FBF0E6',t:'#8A5424'}];
-const POD_H    = [176,128,104];
+// Podium avatars are the plei logomark in gold / silver / bronze.
+const POD_TONE = ['#F2C230', '#C4CDD5', '#CE8148'];
+// plei logomark paths, native viewBox 349.43 × 407.77
+const PLEI_MARK = '<path d="M6.82,404.43c-37.52-25.07,91.56-250.94,101.55-253.97,19.92-6.06,83.94,33.79,81.52,48.9-4.54,28.36-148.28,228.31-183.06,205.07Z"/><path d="M349.35,208.88c-3.2,62.79-124.47,107.49-164.59,106.58-.63,0-1.25-.03-1.83-.07-5.6-.68-9.94-5.45-9.94-11.24,0-1.75.4-3.42,1.11-4.9.05-.1.09-.19.14-.28.07-.13.14-.27.22-.4,14.16-26.32,78.02-69.45,73.26-93.46-8.45-42.76-158.22-117.93-176.53-126.97-1.28-.63-2.16-1.85-2.41-3.25C64.46,50.37,106.51,2.44,123.58.04c17.63-2.48,230.51,115.78,225.77,208.84Z"/><circle cx="304.72" cy="363.06" r="44.71"/>';
+
+// Solid metal disc, white ring inset, white logomark.
+// Mark scaled to 40.0 × 46.7 units (scale .1146) and centred at x=30.0, y=26.6
+// so it sits clear of the ring's inner edge at r=38.
+function pleiAvatarSvg(rank) {
+  const c = POD_TONE[rank];
+  return `<svg class="pod-logo" viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="47" fill="${c}"/>
+    <circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="4"/>
+    <g transform="translate(30.0,26.6) scale(0.1146)" fill="#fff">${PLEI_MARK}</g>
+  </svg>`;
+}
+// Pedestal heights, 1st/2nd/3rd. Mobile gets shorter ones so the figure plus
+// the pedestal still fits inside .podium — if they overflow, flexbox shrinks
+// them proportionally and the three heights collapse into looking identical.
+function podH() {
+  return (window.innerWidth <= 640) ? [116, 84, 66] : [176, 128, 104];
+}
 const POD_SLOTS = [1,0,2];   // render order: 2nd (left), 1st (centre), 3rd (right)
 
 let _podTimers = [];
@@ -3880,7 +3899,7 @@ let _podTimers = [];
 
 function podFigureHtml(u, rank) {
   return `<div class="pod-fig" data-r="${rank}">
-    <div class="pod-av" style="background:${POD_TONE[rank].b};color:${POD_TONE[rank].t}">${podInitials(u.name)}
+    <div class="pod-av">${pleiAvatarSvg(rank)}
       <span class="pod-medal">${POD_MED[rank]}</span>
       <svg class="pod-ring" viewBox="0 0 74 74"><circle cx="37" cy="37" r="33" stroke="#1A9E6B"/></svg>
       <span class="pod-tick">✓</span>
@@ -3913,19 +3932,20 @@ function renderPodiumShell(podiumUsers, ranked) {
 function buildPodium(users, animate) {
   const row = document.getElementById('podiumRow');
   if (!row) return;
+  const H = podH();
   row.innerHTML = '';
   POD_SLOTS.forEach(rank => {
     const slot = document.createElement('div');
     slot.className = 'pod-slot';
     slot.innerHTML = podFigureHtml(users[rank], rank) +
-      `<div class="pod-ped" style="height:${animate ? 0 : POD_H[rank]}px">${rank + 1}</div>`;
+      `<div class="pod-ped" style="height:${animate ? 0 : H[rank]}px">${rank + 1}</div>`;
     row.appendChild(slot);
   });
   if (!animate) return;
   const peds = row.querySelectorAll('.pod-ped'), figs = row.querySelectorAll('.pod-fig');
   figs.forEach(f => { f.style.opacity = '0'; f.style.transform = 'translateY(20px)'; });
   POD_SLOTS.forEach((rank, ix) => {
-    podAt(() => { peds[ix].style.height = POD_H[rank] + 'px'; }, 140 + ix * 180);
+    podAt(() => { peds[ix].style.height = H[rank] + 'px'; }, 140 + ix * 180);
     podAt(() => { figs[ix].style.opacity = '1'; figs[ix].style.transform = 'none'; }, 600 + ix * 180);
   });
 }
