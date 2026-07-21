@@ -436,7 +436,7 @@ body {
 .pod-pts { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--green); line-height: .95;
   font-variant-numeric: tabular-nums; transition: color .4s; }
 .pod-st { font-size: 10.5px; color: var(--muted); transition: color .6s; }
-.pod-prize { font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: .5px; color: #b8860b;
+.pod-prize { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: .5px; color: #b8860b;
   margin-top: 3px; transition: color .6s; }
 .podium-stage.dark .pod-nm { color: #fff; }
 .podium-stage.dark .pod-st { color: rgba(255,255,255,0.5); }
@@ -489,7 +489,7 @@ body {
   .pod-nm { font-size: 11px; max-width: 100%; }
   .pod-pts { font-size: 22px; }
   .pod-st { font-size: 9px; }
-  .pod-prize { font-size: 12px; }
+  .pod-prize { font-size: 16px; }
   .pod-ped { font-size: 32px; padding-top: 8px; }
   .pod-lights { background: radial-gradient(circle at 50% 50%, transparent 0, transparent 68px, rgba(6,38,25,0.86) 180px); }
   /* Single row so it stays a thin bar under the podium */
@@ -3766,6 +3766,18 @@ function renderRanking() {
   // Auto-compute stage winners if admin
   computeStageWinnersIfNeeded();
 
+  // Stage prizes stack on top of the final placement prize — e.g. whoever
+  // led Group Stage + Round of 32 + Round of 16 AND finishes 1st overall
+  // takes home all of it. Build an email -> extra $ map so the podium can
+  // show each person's real total winnings, not just the placement prize.
+  _stageBonusByEmail = {};
+  ['groupStage', 'round32', 'round16'].forEach(key => {
+    const w = stageWinners[key];
+    if (!w || !w.email) return;
+    const amt = parseInt(String(w.prize).replace(/[^0-9]/g, '')) || 0;
+    _stageBonusByEmail[w.email] = (_stageBonusByEmail[w.email] || 0) + amt;
+  });
+
   const ranked = Object.values(users).filter(u => !u.hiddenFromRanking).map(u => {
     const preds = allPreds[u.email] || {};
     let total = 0, exact = 0, outcome = 0, filled = 0;
@@ -3889,7 +3901,12 @@ function rankingRowsHtml(list) {
   return out;
 }
 const POD_MED  = ['🥇','🥈','🥉'];
-const POD_PRIZE = ['$200','$100','$50'];
+const POD_PRIZE = [200, 100, 50];
+// Populated by renderRanking() right before the podium is built: email -> extra
+// $ won from stage prizes (Group Stage / Round of 32 / Round of 16), so the
+// podium can show a participant's full take-home total, not just the
+// placement prize.
+let _stageBonusByEmail = {};
 // Podium avatars are the plei logomark in gold / silver / bronze.
 const POD_TONE = ['#F2C230', '#C4CDD5', '#CE8148'];
 // plei logomark paths, native viewBox 349.43 × 407.77
@@ -3927,7 +3944,7 @@ function podFigureHtml(u, rank) {
     <div class="pod-nm">${u.name}</div>
     <div class="pod-pts" data-p="${u.total}">${u.total}</div>
     <div class="pod-st">${u.exact} exact · ${u.outcome} outcomes</div>
-    <div class="pod-prize">${POD_PRIZE[rank]}</div>
+    <div class="pod-prize">$${POD_PRIZE[rank] + (_stageBonusByEmail[u.email] || 0)}</div>
   </div>`;
 }
 
